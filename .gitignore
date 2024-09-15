@@ -1,0 +1,10 @@
+# Ignore the .vscode folder
+./ESP32Project/.vscode/
+./ToDoList/.vscode/
+
+# Ignore the build folder
+./ESP32Project/build/
+
+./ESP32Project/managed_components/
+./ESP32Project/dependencies.lock
+

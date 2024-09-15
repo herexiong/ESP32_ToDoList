@@ -1,0 +1,11 @@
+# Ignore the .vscode folder
+.vscode/
+
+# Ignore the build folder
+build/
+
+managed_components/
+
+# 未完成品
+doc/lvgl架构及运行顺序
+components/sd_driver
