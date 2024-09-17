@@ -1,0 +1,3 @@
+[submodule "ESP32Project/components/esp_ghota"]
+	path = ESP32Project/components/esp_ghota
+	url = https://github.com/herexiong/esp_ghota
