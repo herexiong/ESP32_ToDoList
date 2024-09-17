@@ -144,18 +144,28 @@ void time_set(int hour , int minute , int month , int monthday , int weekday){
     ESP_LOGE(TAG,"%s ,%s ,%s",dayTimeBuffer,timeBuffer,weekTimeBuffer);
 }
 
+//ToDo->bugs:diskio_sdmmc: sdmmc_read_blocks failed (257)
+
 //修改天气
 void weather_ui_set(char *weather,char *code,char *temp,char *city){
+    static char codeNum[4] = {0};
     char tempBuffer[6];
     char codeBuffer[50];
+    if (strcmp(code,codeNum) != 0)
+    {
+        sprintf(codeNum,"%s",code);
+        sprintf(codeBuffer,"/sdcard/.DeskInfoScreen/weather/white/%s@1x.png",codeNum);
+        lv_img_set_src(ui_WeatherImage, codeBuffer);	// 加载SD卡中的天气图片 
+    }
+    
     lv_obj_add_flag(ui_Screen1, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
     sprintf(tempBuffer,"%s°",temp);
-    sprintf(codeBuffer,"/sdcard/.DeskInfoScreen/weather/white/%s@1x.png",code);
+    
     ESP_LOGE(TAG,"%s,%s",tempBuffer,codeBuffer);
     lv_label_set_text(ui_WeatherTempValLabel,tempBuffer);
     lv_label_set_text(ui_Weather,weather);
     lv_label_set_text(ui_WeatherLabel,city);
-    lv_img_set_src(ui_WeatherImage, codeBuffer);	// 加载SD卡中的天气图片
+
 }
 
 ///////////////////// SCREENS ////////////////////
