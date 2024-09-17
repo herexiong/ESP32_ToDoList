@@ -150,7 +150,7 @@ void time_set(int hour , int minute , int month , int monthday , int weekday){
 void weather_ui_set(char *weather,char *code,char *temp,char *city){
     static char codeNum[4] = {0};
     char tempBuffer[6];
-    char codeBuffer[50];
+    static char codeBuffer[50] = {0};
     if (strcmp(code,codeNum) != 0)
     {
         sprintf(codeNum,"%s",code);

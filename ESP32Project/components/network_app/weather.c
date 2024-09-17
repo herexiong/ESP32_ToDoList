@@ -27,23 +27,23 @@ void parse_weather_json(char *buffer){
 		cJSON *temp = cJSON_GetObjectItem(json_now,"text");
 		char *weatherStr = (char *)malloc(sizeof(char)*strlen(temp->valuestring)+1);
 		strcpy(weatherStr,temp->valuestring);
-		ESP_LOGE(TAG, "%s",weatherStr);
+		// ESP_LOGE(TAG, "%s",weatherStr);
 
 		temp = cJSON_GetObjectItem(json_now,"code");
 		char *codeStr = (char *)malloc(sizeof(char)*strlen(temp->valuestring)+1);
 		strcpy(codeStr,temp->valuestring);
-		ESP_LOGE(TAG, "%s",codeStr);
+		// ESP_LOGE(TAG, "%s",codeStr);
 
 		temp = cJSON_GetObjectItem(json_now,"temperature");
 		char *tempStr = (char *)malloc(sizeof(char)*strlen(temp->valuestring)+1);
 		strcpy(tempStr,temp->valuestring);
-		ESP_LOGE(TAG, "%s",tempStr);
+		// ESP_LOGE(TAG, "%s",tempStr);
 
         cJSON *json_location = cJSON_GetObjectItem(json_info,"location");
 		temp = cJSON_GetObjectItem(json_location,"name");
 		char *cityStr = (char *)malloc(sizeof(char)*strlen(temp->valuestring)+1);
 		strcpy(cityStr,temp->valuestring);
-		ESP_LOGE(TAG, "%s",cityStr);
+		// ESP_LOGE(TAG, "%s",cityStr);
 
 		weather_ui_set(weatherStr,codeStr,tempStr,cityStr);
 
