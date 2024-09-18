@@ -7,6 +7,10 @@
 #include "ui.h"
 
 #define TAG "ui_app"
+//时间
+#include "ntp_time.h"
+//天气
+#include "weather.h"
 
 static void lv_tick_task(void *arg)
 {
@@ -34,6 +38,10 @@ void lv_task(void *param)
 
     ui_init();
     lv_port_disp_backlight(true);//在UI初始化后打开背光避免花屏
+    //时间任务
+    xTaskCreate(time_task,"time_task",4*1024,NULL,5,NULL);
+    //天气任务
+    xTaskCreate(weather_task,"weather_task",8*1024,NULL,5,NULL);
     while (1)
     {
         /* Delay 1 tick (assumes FreeRTOS tick is 10ms */

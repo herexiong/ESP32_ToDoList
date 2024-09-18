@@ -15,10 +15,6 @@
 //dlna
 #include "audio_dlna.h"
 #include "audio_player.h"
-//时间
-#include "ntp_time.h"
-//天气
-#include "weather.h"
 //连接
 #include "protocol_examples_common.h"
 //OTA升级
@@ -70,10 +66,6 @@ void app_main(void)
     xTaskCreate(esp_audio_task,"esp_audio_task",32*1024,NULL,5,NULL);
     //UI
     xTaskCreate(lv_task,"lvgl",16*1024,NULL,5,NULL);
-    //时间任务
-    xTaskCreate(time_task,"time_task",4*1024,NULL,5,NULL);
-    //天气任务
-    xTaskCreate(weather_task,"weather_task",8*1024,NULL,5,NULL);
     //OTA任务
     xTaskCreate(ota_task,"ota_task",8*1024,NULL,5,NULL);
 
