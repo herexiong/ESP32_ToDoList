@@ -131,7 +131,7 @@ const char *Time[12+7] = {
 };
 
 //修改UI时间
-void time_set(int hour , int minute , int month , int monthday , int weekday){
+void time_ui_set(int hour , int minute , int month , int monthday , int weekday){
     char dayTimeBuffer[7];
     char timeBuffer[6];
     char weekTimeBuffer[4];
@@ -141,7 +141,7 @@ void time_set(int hour , int minute , int month , int monthday , int weekday){
     lv_label_set_text(ui_DateLabel,dayTimeBuffer);
     lv_label_set_text(ui_TimeLabel,timeBuffer);
     lv_label_set_text(ui_WeekLabel,weekTimeBuffer);
-    ESP_LOGE(TAG,"%s ,%s ,%s",dayTimeBuffer,timeBuffer,weekTimeBuffer);
+    // ESP_LOGI(TAG,"%s ,%s ,%s",dayTimeBuffer,timeBuffer,weekTimeBuffer);
 }
 
 //ToDo->bugs:diskio_sdmmc: sdmmc_read_blocks failed (257)

@@ -61,7 +61,7 @@ void time_task(void *param){
     {
         time(&now);
         localtime_r(&now, &timeinfo);
-        time_set(timeinfo.tm_hour,timeinfo.tm_min,timeinfo.tm_mon,timeinfo.tm_mday,timeinfo.tm_wday);
+        time_ui_set(timeinfo.tm_hour,timeinfo.tm_min,timeinfo.tm_mon,timeinfo.tm_mday,timeinfo.tm_wday);
         vTaskDelay(pdMS_TO_TICKS(59000));//59秒更新一次
     }
     vTaskDelete(NULL);

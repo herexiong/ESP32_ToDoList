@@ -1,4 +1,5 @@
 #ifndef SD_H_
+#define SD_H_
 
 //SD驱动
 #include "sdmmc_cmd.h"

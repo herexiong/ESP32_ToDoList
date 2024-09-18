@@ -21,6 +21,8 @@
 #include "weather.h"
 //连接
 #include "protocol_examples_common.h"
+//OTA升级
+#include "ota.h"
 
 #define TAG "main"
  
@@ -72,6 +74,8 @@ void app_main(void)
     xTaskCreate(time_task,"time_task",4*1024,NULL,5,NULL);
     //天气任务
     xTaskCreate(weather_task,"weather_task",8*1024,NULL,5,NULL);
+    //OTA任务
+    xTaskCreate(ota_task,"ota_task",8*1024,NULL,5,NULL);
 
     // vTaskDelay(pdMS_TO_TICKS(1000));
     // xTaskCreate(print_task,"print",8*1024,NULL,5,NULL);
