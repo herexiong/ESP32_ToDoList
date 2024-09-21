@@ -168,6 +168,18 @@ void weather_ui_set(char *weather,char *code,char *temp,char *city){
 
 }
 
+void sensor_ui_set(float Temp,float Humi,int TVOC,int eCO2){
+    char TempBuffer[10];
+    char HumiBuffer[10];
+    char eCO2Buffer[10];
+    sprintf(TempBuffer,"%.2f°C",Temp);
+    sprintf(HumiBuffer,"%.2f%%",Humi);
+    sprintf(eCO2Buffer,"%d",eCO2);
+    lv_label_set_text(ui_TempValueLabel, TempBuffer);
+    lv_label_set_text(ui_HumiValueLabel, HumiBuffer);
+    lv_label_set_text(ui_Co2ValueLabel, eCO2Buffer);
+}
+
 ///////////////////// SCREENS ////////////////////
 
 void ui_init(void)

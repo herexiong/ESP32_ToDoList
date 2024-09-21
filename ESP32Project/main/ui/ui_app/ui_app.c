@@ -1,5 +1,7 @@
 #include "ui_app.h"
 #include "esp_system.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 #include "esp_log.h"
 #include "lv_port_disp.h"
 #include "lv_port_indev.h"

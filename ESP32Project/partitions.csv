@@ -3,8 +3,8 @@
 nvs,data,     nvs,       0x9000,         0x6000,
 phy_init,     data,      phy,            0xf000,       0x1000,
 otadata,      data,      ota,            ,             0x2000,
-ota_0,        app,       ota_0,          ,             2M,
-ota_1,        app,       ota_1,          ,             2M,
+ota_0,        app,       ota_0,          ,             3M,
+ota_1,        app,       ota_1,          ,             3M,
 storage,      0x01,      0x40,           ,             2M,
 #将字库放在Flash末尾，中间方便扩展
 font_hs20,    data,      ,               0xF00000,     1042108,

@@ -56,10 +56,10 @@ void change_btn_icon(bool isplaying);
 void change_audio_bar(char *current_time,char *total_time,int value);
 void music_bar_cb(lv_obj_t *event);
 lv_res_t audio_btn_cb(lv_obj_t *event);
+
 void time_ui_set(int hour , int minute , int month , int monthday , int weekday);
 void weather_ui_set(char *weather,char *code,char *temp,char *city);
-
-
+void sensor_ui_set(float Temp,float Humi,int TVOC,int eCO2);
 
 void ui_init(void);
 

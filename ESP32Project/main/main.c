@@ -4,7 +4,6 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/event_groups.h"
 #include "nvs_flash.h"
-
 //驱动
 #include "lv_port_disp.h"
 #include "lv_port_indev.h"
@@ -19,6 +18,8 @@
 #include "protocol_examples_common.h"
 //OTA升级
 #include "ota.h"
+//传感器
+#include "sensor.h"
 
 #define TAG "main"
  
@@ -68,6 +69,8 @@ void app_main(void)
     xTaskCreate(lv_task,"lvgl",16*1024,NULL,5,NULL);
     //OTA任务
     xTaskCreate(ota_task,"ota_task",8*1024,NULL,5,NULL);
+    //传感器读取任务
+    xTaskCreate(Sensor_task,"Sensor_task",4*1024,NULL,5,NULL);
 
     // vTaskDelay(pdMS_TO_TICKS(1000));
     // xTaskCreate(print_task,"print",8*1024,NULL,5,NULL);
