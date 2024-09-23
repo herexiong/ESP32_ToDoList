@@ -8,3 +8,6 @@
 ./ESP32Project/managed_components/
 ./ESP32Project/dependencies.lock
 
+./SquareLineProject/Export/
+./SquareLineProject/autosave/
+./SquareLineProject/backup/

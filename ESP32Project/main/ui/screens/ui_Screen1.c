@@ -293,7 +293,122 @@ void ui_Screen1_screen_init(void)
     lv_obj_set_align(ui_Checkbox1, LV_ALIGN_CENTER);
     lv_obj_add_flag(ui_Checkbox1, LV_OBJ_FLAG_SCROLL_ON_FOCUS);     /// Flags
 
-    ui_OtherUI = lv_tabview_add_tab(ui_TabView1, "Title 2");
+    ui_TimerUI = lv_tabview_add_tab(ui_TabView1, "Title 2");
 
+    ui_TabView2 = lv_tabview_create(ui_TimerUI, LV_DIR_TOP, 50);
+    lv_obj_set_width(ui_TabView2, 320);
+    lv_obj_set_height(ui_TabView2, 480);
+    lv_obj_set_align(ui_TabView2, LV_ALIGN_CENTER);
+    lv_obj_clear_flag(ui_TabView2, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+
+
+    ui_CountdownTabPage = lv_tabview_add_tab(ui_TabView2, "Countdown");
+	lv_obj_clear_flag(ui_TimeUI,LV_OBJ_FLAG_SCROLLABLE);
+    lv_obj_set_scroll_dir(ui_CountdownTabPage, LV_DIR_TOP);
+
+    ui_HourRoller = lv_roller_create(ui_CountdownTabPage);
+    lv_roller_set_options(ui_HourRoller, "0\n1\n2\n3\n4\n5\n6\n7\n8\n9", LV_ROLLER_MODE_INFINITE);
+    lv_obj_set_width(ui_HourRoller, 80);
+    lv_obj_set_height(ui_HourRoller, 120);
+    lv_obj_set_x(ui_HourRoller, -110);
+    lv_obj_set_y(ui_HourRoller, -100);
+    lv_obj_set_align(ui_HourRoller, LV_ALIGN_CENTER);
+
+    lv_obj_set_style_text_font(ui_HourRoller, &lv_font_montserrat_20, LV_PART_SELECTED | LV_STATE_DEFAULT);
+
+    ui_MinRoller = lv_roller_create(ui_CountdownTabPage);
+    lv_roller_set_options(ui_MinRoller,
+                          "0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n14\n15\n16\n17\n18\n19\n20\n21\n22\n23\n24\n25\n26\n27\n28\n29\n30\n31\n32\n33\n34\n35\n36\n37\n38\n39\n40\n41\n42\n43\n44\n45\n46\n47\n48\n49\n50\n51\n52\n53\n54\n55\n56\n57\n58\n59",
+                          LV_ROLLER_MODE_INFINITE);
+    lv_roller_set_selected(ui_MinRoller, 10, LV_ANIM_OFF);
+    lv_obj_set_width(ui_MinRoller, 80);
+    lv_obj_set_height(ui_MinRoller, 120);
+    lv_obj_set_x(ui_MinRoller, 0);
+    lv_obj_set_y(ui_MinRoller, -100);
+    lv_obj_set_align(ui_MinRoller, LV_ALIGN_CENTER);
+
+    lv_obj_set_style_text_font(ui_MinRoller, &lv_font_montserrat_20, LV_PART_SELECTED | LV_STATE_DEFAULT);
+
+    ui_SecRoller = lv_roller_create(ui_CountdownTabPage);
+    lv_roller_set_options(ui_SecRoller,
+                          "0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n14\n15\n16\n17\n18\n19\n20\n21\n22\n23\n24\n25\n26\n27\n28\n29\n30\n31\n32\n33\n34\n35\n36\n37\n38\n39\n40\n41\n42\n43\n44\n45\n46\n47\n48\n49\n50\n51\n52\n53\n54\n55\n56\n57\n58\n59",
+                          LV_ROLLER_MODE_INFINITE);
+    lv_roller_set_selected(ui_SecRoller, 0, LV_ANIM_OFF);
+    lv_obj_set_width(ui_SecRoller, 80);
+    lv_obj_set_height(ui_SecRoller, 120);
+    lv_obj_set_x(ui_SecRoller, 110);
+    lv_obj_set_y(ui_SecRoller, -100);
+    lv_obj_set_align(ui_SecRoller, LV_ALIGN_CENTER);
+    lv_obj_set_style_text_font(ui_SecRoller, &lv_font_montserrat_20, LV_PART_SELECTED | LV_STATE_DEFAULT);
+
+    ui_HourLabel = lv_label_create(ui_CountdownTabPage);
+    lv_obj_set_width(ui_HourLabel, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_HourLabel, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_HourLabel, -110);
+    lv_obj_set_y(ui_HourLabel, -180);
+    lv_obj_set_align(ui_HourLabel, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_HourLabel, "Hour");
+
+    ui_MinLabel = lv_label_create(ui_CountdownTabPage);
+    lv_obj_set_width(ui_MinLabel, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_MinLabel, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_MinLabel, 0);
+    lv_obj_set_y(ui_MinLabel, -180);
+    lv_obj_set_align(ui_MinLabel, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_MinLabel, "Min");
+
+    ui_SecLabel = lv_label_create(ui_CountdownTabPage);
+    lv_obj_set_width(ui_SecLabel, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_SecLabel, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_SecLabel, 110);
+    lv_obj_set_y(ui_SecLabel, -180);
+    lv_obj_set_align(ui_SecLabel, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_SecLabel, "Sec");
+
+    ui_CountdownBTN1 = lv_btn_create(ui_CountdownTabPage);
+    lv_obj_set_width(ui_CountdownBTN1, 80);
+    lv_obj_set_height(ui_CountdownBTN1, 50);
+    lv_obj_set_x(ui_CountdownBTN1, 0);
+    lv_obj_set_y(ui_CountdownBTN1, 140);
+    lv_obj_set_align(ui_CountdownBTN1, LV_ALIGN_CENTER);
+    lv_obj_set_style_radius(ui_CountdownBTN1, 20, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_shadow_color(ui_CountdownBTN1, lv_color_hex(0x2095F6), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_shadow_opa(ui_CountdownBTN1, 50, LV_PART_MAIN | LV_STATE_DEFAULT);
+	lv_obj_add_event_cb(ui_CountdownBTN1, Countdown_btn_cb, LV_EVENT_CLICKED , NULL);
+
+    ui_CountdownLabel1 = lv_label_create(ui_CountdownBTN1);
+    lv_obj_set_width(ui_CountdownLabel1, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_CountdownLabel1, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_align(ui_CountdownLabel1, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_CountdownLabel1, LV_SYMBOL_PLAY);
+    lv_obj_set_style_text_font(ui_CountdownLabel1, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+	
+    ui_CountdownBTN2 = lv_btn_create(ui_CountdownTabPage);
+    lv_obj_set_width(ui_CountdownBTN2, 80);
+    lv_obj_set_height(ui_CountdownBTN2, 50);
+    lv_obj_set_x(ui_CountdownBTN2, -80);
+    lv_obj_set_y(ui_CountdownBTN2, 140);
+    lv_obj_set_align(ui_CountdownBTN2, LV_ALIGN_CENTER);
+    lv_obj_set_style_radius(ui_CountdownBTN2, 20, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_shadow_color(ui_CountdownBTN2, lv_color_hex(0x2095F6), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_shadow_opa(ui_CountdownBTN2, 50, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_add_flag(ui_CountdownBTN2,LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_event_cb(ui_CountdownBTN2, Countdown_btn_cb, LV_EVENT_CLICKED , NULL);
+
+    ui_CountdownLabel2 = lv_label_create(ui_CountdownBTN2);
+    lv_obj_set_width(ui_CountdownLabel2, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_CountdownLabel2, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_align(ui_CountdownLabel2, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_CountdownLabel2, LV_SYMBOL_STOP);
+    lv_obj_set_style_text_font(ui_CountdownLabel2, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    ui_TimingTabPage = lv_tabview_add_tab(ui_TabView2, "Timing");
+
+    ui_OtherUI = lv_tabview_add_tab(ui_TabView1, "Title 3");
+
+    ui_Button3 = lv_btn_create(ui_OtherUI);
+    lv_obj_set_width(ui_Button3, 100);
+    lv_obj_set_height(ui_Button3, 50);
+    lv_obj_set_align(ui_Button3, LV_ALIGN_CENTER);
 
 }

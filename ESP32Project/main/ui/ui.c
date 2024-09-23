@@ -7,6 +7,7 @@
 #include "ui_helpers.h"
 #include "esp_log.h"
 #include "audio_player.h"
+#include "../timer/timer.h"
 
 ///////////////////// VARIABLES ////////////////////
 
@@ -44,7 +45,22 @@ lv_obj_t * ui_Button11;
 lv_obj_t * ui_Checkbox2;
 lv_obj_t * ui_Button1;
 lv_obj_t * ui_Checkbox1;
+lv_obj_t * ui_TimerUI;
+lv_obj_t * ui_TabView2;
+lv_obj_t * ui_CountdownTabPage;
+lv_obj_t * ui_HourRoller;
+lv_obj_t * ui_MinRoller;
+lv_obj_t * ui_SecRoller;
+lv_obj_t * ui_HourLabel;
+lv_obj_t * ui_MinLabel;
+lv_obj_t * ui_SecLabel;
+lv_obj_t * ui_CountdownBTN1;
+lv_obj_t * ui_CountdownLabel1;
+lv_obj_t * ui_CountdownBTN2;
+lv_obj_t * ui_CountdownLabel2;
+lv_obj_t * ui_TimingTabPage;
 lv_obj_t * ui_OtherUI;
+lv_obj_t * ui_Button3;
 lv_obj_t * ui____initial_actions0;
 lv_obj_t * ui_WeatherImage;
 
@@ -168,6 +184,7 @@ void weather_ui_set(char *weather,char *code,char *temp,char *city){
 
 }
 
+//传感器UI更新
 void sensor_ui_set(float Temp,float Humi,int TVOC,int eCO2){
     char TempBuffer[10];
     char HumiBuffer[10];
@@ -178,6 +195,67 @@ void sensor_ui_set(float Temp,float Humi,int TVOC,int eCO2){
     lv_label_set_text(ui_TempValueLabel, TempBuffer);
     lv_label_set_text(ui_HumiValueLabel, HumiBuffer);
     lv_label_set_text(ui_Co2ValueLabel, eCO2Buffer);
+}
+
+//0->未开启 1->开启运行中 2->开启暂停中
+static int CountdownState = 0;
+
+//倒计时UI更新
+void Countdown_ui_set(int hour,int min,int sec,int endFlag){
+    if (endFlag == 1)
+    {
+        lv_obj_set_x(ui_CountdownBTN1, 0);
+        lv_label_set_text(ui_CountdownLabel1, LV_SYMBOL_PLAY);
+        lv_obj_add_flag(ui_CountdownBTN2,LV_OBJ_FLAG_HIDDEN);
+        CountdownState = 0;
+    }else{
+        lv_roller_set_selected(ui_HourRoller, hour, LV_ANIM_ON);
+        lv_roller_set_selected(ui_MinRoller, min, LV_ANIM_ON);
+        lv_roller_set_selected(ui_SecRoller, sec, LV_ANIM_ON);
+    }
+}
+
+//倒计时按钮开始回调函数
+void Countdown_btn_cb(lv_obj_t *event){
+    lv_obj_t* obj = lv_event_get_target(event);
+    if (obj == ui_CountdownBTN1)
+    {
+        if (CountdownState == 0)//未开启
+        {
+            uint16_t hour = lv_roller_get_selected(ui_HourRoller);
+            uint16_t min = lv_roller_get_selected(ui_MinRoller);
+            uint16_t sec = lv_roller_get_selected(ui_SecRoller);
+            int secValue = (int)hour*3600+(int)min*60+(int)sec;
+            lv_label_set_text(ui_CountdownLabel1, LV_SYMBOL_PAUSE);
+            lv_obj_set_x(ui_CountdownBTN1, 80);
+            lv_obj_clear_flag(ui_CountdownBTN2,LV_OBJ_FLAG_HIDDEN);
+            timer_start(0,secValue);
+            ESP_LOGI(TAG,"ready Countdown sec:%d",secValue);
+            CountdownState = 1;
+        }else if (CountdownState == 1)//开启中运行中
+        {
+            timer_change_state(0);
+            lv_label_set_text(ui_CountdownLabel1, LV_SYMBOL_PLAY);
+            CountdownState = 2;
+        }else if (CountdownState == 2)//开启暂停中
+        {
+            timer_change_state(1);
+            CountdownState = 1;
+        }
+        
+    }else if (obj == ui_CountdownBTN2)//关闭定时器
+    {
+        if (CountdownState != 0)
+        {
+            timer_change_state(0);//关闭定时器
+            timer_change_state(2);//杀掉任务
+            Countdown_ui_set(0,10,0,0);//设置UI时间复位
+            Countdown_ui_set(0,0,0,1); //设置按钮UI复位
+            CountdownState = 0;
+        }
+        
+        ESP_LOGI(TAG,"ui_CountdownBTN2");
+    }
 }
 
 ///////////////////// SCREENS ////////////////////

@@ -75,7 +75,7 @@ void ota_task(void *param){
         // .storagenamematch = "storage-esp32.bin",
         // .storagepartitionname = "storage",
         /* 1 minute as a example, but in production you should pick something larger (remember, Github has ratelimites on the API! )*/
-        .updateInterval = 1,
+        .updateInterval = 60,
     };
     /* initialize ghota. */
     ghota_client_handle_t *ghota_client = ghota_init(&ghconfig);

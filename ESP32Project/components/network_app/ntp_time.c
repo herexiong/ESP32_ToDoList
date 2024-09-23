@@ -57,12 +57,17 @@ void time_task(void *param){
     localtime_r(&now, &timeinfo);
     strftime(strftime_buf, sizeof(strftime_buf), "%c", &timeinfo);
     ESP_LOGI(TAG, "The current date/time in Shanghai is: %s", strftime_buf);
+    int last_min = timeinfo.tm_min;
     while (1)
     {
         time(&now);
         localtime_r(&now, &timeinfo);
-        time_ui_set(timeinfo.tm_hour,timeinfo.tm_min,timeinfo.tm_mon,timeinfo.tm_mday,timeinfo.tm_wday);
-        vTaskDelay(pdMS_TO_TICKS(59000));//59秒更新一次
+        if (timeinfo.tm_min != last_min)
+        {
+            time_ui_set(timeinfo.tm_hour,timeinfo.tm_min,timeinfo.tm_mon,timeinfo.tm_mday,timeinfo.tm_wday);
+            last_min = timeinfo.tm_min;
+        }
+        vTaskDelay(pdMS_TO_TICKS(1000));//60秒更新一次
     }
     vTaskDelete(NULL);
 }

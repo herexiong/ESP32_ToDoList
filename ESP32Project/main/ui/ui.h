@@ -35,6 +35,7 @@ extern lv_obj_t * ui_Co2ValueLabel;
 extern lv_obj_t * ui_WeatherLabel;
 extern lv_obj_t * ui_Weather;
 extern lv_obj_t * ui_WeatherTempValLabel;
+
 extern lv_obj_t * ui_DLNAUI;
 extern lv_obj_t * ui_DLNALabel;
 extern lv_obj_t * ui_MusicBar;
@@ -48,7 +49,22 @@ extern lv_obj_t * ui_Button11;
 extern lv_obj_t * ui_Checkbox2;
 extern lv_obj_t * ui_Button1;
 extern lv_obj_t * ui_Checkbox1;
+extern lv_obj_t * ui_TimerUI;
+extern lv_obj_t * ui_TabView2;
+extern lv_obj_t * ui_CountdownTabPage;
+extern lv_obj_t * ui_HourRoller;
+extern lv_obj_t * ui_MinRoller;
+extern lv_obj_t * ui_SecRoller;
+extern lv_obj_t * ui_HourLabel;
+extern lv_obj_t * ui_MinLabel;
+extern lv_obj_t * ui_SecLabel;
+extern lv_obj_t * ui_CountdownBTN1;
+extern lv_obj_t * ui_CountdownLabel1;
+extern lv_obj_t * ui_CountdownBTN2;
+extern lv_obj_t * ui_CountdownLabel2;
+extern lv_obj_t * ui_TimingTabPage;
 extern lv_obj_t * ui_OtherUI;
+extern lv_obj_t * ui_Button3;
 extern lv_obj_t * ui____initial_actions0;
 extern lv_obj_t * ui_WeatherImage;
 
@@ -60,6 +76,8 @@ lv_res_t audio_btn_cb(lv_obj_t *event);
 void time_ui_set(int hour , int minute , int month , int monthday , int weekday);
 void weather_ui_set(char *weather,char *code,char *temp,char *city);
 void sensor_ui_set(float Temp,float Humi,int TVOC,int eCO2);
+void Countdown_ui_set(int hour,int min,int sec,int endFlag);
+void Countdown_btn_cb(lv_obj_t *event);
 
 void ui_init(void);
 
