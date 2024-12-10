@@ -9,7 +9,16 @@
 SquareLineProject是LVGL的图形化UI生成工具，此文件夹用于存放SquareLine工程文件及其导出的文件
 ### ToDoList
 用于前期验证备忘录的存储及其存储结构
+### HxMonitor
+上位机软件，支持windows，64位软件
 
 ## [版本更新日志](./更新日志.md)
 
 ## [代码说明文件](./ESP32Project/README_CH.md)
+
+## Q&A
+Q:为什么IDF无法成功编译  
+A:1.如果使用了clash获取其他代理软件，尝试关闭代理后编译
+
+Q:为什么烧录失效  
+A:请查看[烧录说明](./ESP32Project/README_CH.md)

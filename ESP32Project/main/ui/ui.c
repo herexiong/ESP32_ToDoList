@@ -9,6 +9,9 @@
 #include "audio_player.h"
 #include "../timer/timer.h"
 
+#include <stdio.h>
+#include <string.h>
+
 ///////////////////// VARIABLES ////////////////////
 
 
@@ -60,7 +63,31 @@ lv_obj_t * ui_CountdownBTN2;
 lv_obj_t * ui_CountdownLabel2;
 lv_obj_t * ui_TimingTabPage;
 lv_obj_t * ui_OtherUI;
-lv_obj_t * ui_Button3;
+lv_obj_t * ui_UsageChart;
+lv_chart_series_t * ui_UsageChart_series_1;
+lv_chart_series_t * ui_UsageChart_series_2;
+lv_obj_t * ui_CpuTempBar;
+lv_obj_t * ui_NetUpLabel;
+lv_obj_t * ui_NetDwLabel;
+lv_obj_t * ui_CpuTitleLabel;
+lv_obj_t * ui_GpuTitleLabel;
+lv_obj_t * ui_RamBar;
+lv_obj_t * ui_RamLabel;
+lv_obj_t * ui_GRamBar;
+lv_obj_t * ui_GRamLabel;
+lv_obj_t * ui_GpuPowerLabel;
+lv_obj_t * ui_CpuPowerLabel;
+lv_obj_t * ui_CpuTempLabel;
+lv_obj_t * ui_GpuTempLabel;
+lv_obj_t * ui_GpuTempBar;
+lv_obj_t * ui_RamUsedLabel;
+lv_obj_t * ui_RamUsageLabel;
+lv_obj_t * ui_GRamUsedLabel;
+lv_obj_t * ui_GRamUsageLabel;
+lv_obj_t * ui_DwSpeedLabel;
+lv_obj_t * ui_UpSpeedLabel;
+lv_obj_t * ui_NetTitleLabel;
+lv_obj_t * ui_MonitorTime;
 lv_obj_t * ui____initial_actions0;
 lv_obj_t * ui_WeatherImage;
 
@@ -157,6 +184,7 @@ void time_ui_set(int hour , int minute , int month , int monthday , int weekday)
     lv_label_set_text(ui_DateLabel,dayTimeBuffer);
     lv_label_set_text(ui_TimeLabel,timeBuffer);
     lv_label_set_text(ui_WeekLabel,weekTimeBuffer);
+    lv_label_set_text(ui_MonitorTime,timeBuffer);
     // ESP_LOGI(TAG,"%s ,%s ,%s",dayTimeBuffer,timeBuffer,weekTimeBuffer);
 }
 
@@ -173,10 +201,10 @@ void weather_ui_set(char *weather,char *code,char *temp,char *city){
         sprintf(codeBuffer,"/sdcard/.DeskInfoScreen/weather/white/%s@1x.png",codeNum);
         lv_img_set_src(ui_WeatherImage, codeBuffer);	// 加载SD卡中的天气图片 
     }
-    
+
     lv_obj_add_flag(ui_Screen1, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
     sprintf(tempBuffer,"%s°",temp);
-    
+
     ESP_LOGE(TAG,"%s,%s",tempBuffer,codeBuffer);
     lv_label_set_text(ui_WeatherTempValLabel,tempBuffer);
     lv_label_set_text(ui_Weather,weather);
@@ -242,7 +270,7 @@ void Countdown_btn_cb(lv_obj_t *event){
             timer_change_state(1);
             CountdownState = 1;
         }
-        
+
     }else if (obj == ui_CountdownBTN2)//关闭定时器
     {
         if (CountdownState != 0)
@@ -253,11 +281,121 @@ void Countdown_btn_cb(lv_obj_t *event){
             Countdown_ui_set(0,0,0,1); //设置按钮UI复位
             CountdownState = 0;
         }
-        
+
         ESP_LOGI(TAG,"ui_CountdownBTN2");
     }
 }
 
+
+//修改性能监视器UI
+void MonitorCPU_ui_set(char* title , char* power , char* usage , char* temp){
+    static uint8_t init = 0;
+    if(!init) {
+        //对于移动处理器来说‘/’后面一般是核显名字，防止名字太长
+        for (int i = 0; i < strlen(title)-1; i++)//这样直接操作cjson内的数据会导致内存泄漏吗
+        {
+            if (title[i] == '/')
+            {
+                title[i] = '\0';
+                break;
+            }
+        }
+
+        lv_label_set_text(ui_CpuTitleLabel,title);
+        init = 1;
+    }
+    lv_label_set_text(ui_CpuPowerLabel,power);
+
+    usage[strlen(usage)-1] = '\0';//去掉百分号
+    lv_chart_set_next_value(ui_UsageChart, ui_UsageChart_series_1, atoi(usage));
+
+    lv_label_set_text(ui_CpuTempLabel,temp);
+    lv_bar_set_value(ui_CpuTempBar,atof(temp),LV_ANIM_ON);
+}
+void MonitorGPU_ui_set(char* title , char* power , char* usage , char* temp, char* usedram,char *totalram){
+    static uint8_t init = 0;
+    if(!init) {
+        lv_label_set_text(ui_GpuTitleLabel,title);
+        init = 1;
+    }
+    lv_label_set_text(ui_GpuPowerLabel,power);
+
+    usage[strlen(usage)-1] = '\0';//去掉百分号
+    lv_chart_set_next_value(ui_UsageChart, ui_UsageChart_series_2, atoi(usage));
+
+    lv_label_set_text(ui_GpuTempLabel,temp);
+    lv_bar_set_value(ui_GpuTempBar,atof(temp),LV_ANIM_ON);
+    
+    char rambuffer[20];
+    char ramusagebuffer[20];
+    float usedram_num = 0,totalram_num = 0;
+    if (usedram[strlen(usedram)-1] == 'M')
+    {
+        usedram[strlen(usedram)-1] = '\0';
+        usedram_num =(float)atoi(usedram)/1024.0;
+    }
+    else if (usedram[strlen(usedram)-1] == 'G')
+    {
+        usedram[strlen(usedram)-1] = '\0';
+        usedram_num = atof(usedram);
+    }
+    
+    if (totalram[strlen(totalram)-1] == 'M')
+    {
+        totalram[strlen(totalram)-1] = '\0';
+        totalram_num = (float)atoi(totalram)/(float)1024.0;
+    }
+    else if (totalram[strlen(totalram)-1] == 'G')
+    {
+        totalram[strlen(totalram)-1] = '\0';
+        totalram_num = atof(totalram);
+    }
+    sprintf(rambuffer,"%.1f/%.1fG",usedram_num,totalram_num);
+    lv_label_set_text(ui_GRamUsedLabel,rambuffer);
+    float usagep = usedram_num/totalram_num*100;
+    sprintf(ramusagebuffer,"%.2f%%",usagep);
+    lv_label_set_text(ui_GRamUsageLabel,ramusagebuffer);
+    lv_bar_set_value(ui_GRamBar,(int)usagep,LV_ANIM_ON);
+    // lv_label_set_text(ui_CpuUsageLabel,usage);
+    // lv_label_set_text(ui_GRamUsedLabel,used);
+}
+void MonitorRAM_ui_set(char* usage , char* usedram,char *totalram){
+    char rambuffer[20];
+    char ramusagebuffer[20];
+    float usedram_num = 0,totalram_num = 0;
+    if (usedram[strlen(usedram)-1] == 'M')
+    {
+        usedram[strlen(usedram)-1] = '\0';
+        usedram_num = atof(usedram)/1024.0;
+    }
+    else if (usedram[strlen(usedram)-1] == 'G')
+    {
+        usedram[strlen(usedram)-1] = '\0';
+        usedram_num = atof(usedram);
+    }
+    
+    if (totalram[strlen(totalram)-1] == 'M')
+    {
+        totalram[strlen(totalram)-1] = '\0';
+        totalram_num = atof(totalram)/1024.0;
+    }
+    else if (totalram[strlen(totalram)-1] == 'G')
+    {
+        totalram[strlen(totalram)-1] = '\0';
+        totalram_num = atof(totalram);
+    }
+    sprintf(rambuffer,"%.1f/%.1fG",usedram_num,totalram_num);
+    lv_label_set_text(ui_RamUsedLabel,rambuffer);
+    float usagep = usedram_num/totalram_num*100;
+    sprintf(ramusagebuffer,"%.2f%%",usagep);
+    lv_label_set_text(ui_RamUsageLabel,ramusagebuffer);
+    lv_bar_set_value(ui_RamBar,(int)usagep,LV_ANIM_ON);
+}
+void MonitorNET_ui_set(char* title , char* upload , char* download){
+    lv_label_set_text(ui_NetTitleLabel,title);
+    lv_label_set_text(ui_UpSpeedLabel,upload);
+    lv_label_set_text(ui_DwSpeedLabel,download);
+}
 ///////////////////// SCREENS ////////////////////
 
 void ui_init(void)
@@ -266,7 +404,7 @@ void ui_init(void)
     lv_theme_t * theme = lv_theme_default_init(dispp, lv_palette_main(LV_PALETTE_BLUE), lv_palette_main(LV_PALETTE_RED),
                                                false, LV_FONT_DEFAULT);
     lv_disp_set_theme(dispp, theme);
-    
+
     ui_Screen1_screen_init();
     ui____initial_actions0 = lv_obj_create(NULL);
     lv_disp_load_scr(ui_Screen1);

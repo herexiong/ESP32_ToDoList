@@ -20,6 +20,8 @@
 #include "ota.h"
 //传感器
 #include "sensor.h"
+//串口
+#include "uart_app.h"
 
 #define TAG "main"
  
@@ -71,7 +73,9 @@ void app_main(void)
     xTaskCreate(ota_task,"ota_task",8*1024,NULL,5,NULL);
     //传感器读取任务
     xTaskCreate(Sensor_task,"Sensor_task",4*1024,NULL,5,NULL);
-
+    //串口任务
+   xTaskCreate(uart_task, "uart_echo_task", 8*1024, NULL, 5, NULL);
+    
     // vTaskDelay(pdMS_TO_TICKS(1000));
     // xTaskCreate(print_task,"print",8*1024,NULL,5,NULL);
 }

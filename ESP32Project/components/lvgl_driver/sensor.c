@@ -214,6 +214,7 @@ static esp_err_t sgp30_execute_command(sgp30_dev_t *device, uint8_t command[], u
 
 static void sgp30_IAQ_init(sgp30_dev_t *sensor) {
     sgp30_execute_command(sensor, INIT_AIR_QUALITY, 2, 10, NULL, 0);
+    vTaskDelay(pdMS_TO_TICKS(20));//初始化后需要延时至少12ms
 }
 
 static void sgp30_init(sgp30_dev_t *sensor) {
@@ -302,22 +303,17 @@ void Sensor_task(void *param){
     //SGP30初始化
     sgp30_init(&main_sgp30_sensor);
 
-    float tempData, humData;
-    //根据SGP30 datasheet说明SGP30需要每1s读一次，初始化时发送TVOC = 400 14次
-    for (int i = 0; i < 14; i++) {
-        vTaskDelay(pdMS_TO_TICKS(1000));
+    do
+    {
         sgp30_IAQ_measure(&main_sgp30_sensor);
-        // ESP_LOGI(TAG, "SGP30 Calibrating... TVOC: %d,  eCO2: %d",  main_sgp30_sensor.TVOC, main_sgp30_sensor.eCO2);
+        vTaskDelay(pdMS_TO_TICKS(1000));
+        ESP_LOGI("SGP30", "calibtaion");
+    } while (main_sgp30_sensor.TVOC == 0 && main_sgp30_sensor.eCO2==400);
+    
 
-        if(sht30_get_value()==ESP_OK)   //获取温湿度
-        {
-            //算法参考sht30 datasheet
-            tempData =( ( (  (sht30_buf[0]*256) +sht30_buf[1]) *175   )/65535.0  -45  );
-            humData =  ( ( (sht30_buf[3]*256) + (sht30_buf[4]) )*100/65535.0) ;
-            // ESP_LOGI("SHT30", "temp:%4.2f C   hum:%4.2f %%RH \r\n", tempData, humData); //℃打印出来是乱码
-        }
-    }
+    float tempData = 0, humData = 0;
 
+    //ToDo->动态基线补偿，每隔12h记录一次至NVS，重启时恢复基线
     //读取初始基线
     uint16_t eco2_baseline, tvoc_baseline;
     sgp30_get_IAQ_baseline(&main_sgp30_sensor, &eco2_baseline, &tvoc_baseline);
@@ -335,8 +331,8 @@ void Sensor_task(void *param){
         //SGP30数据测量及计算
         sgp30_IAQ_measure(&main_sgp30_sensor);
         //将值通过串口发送出去
-        ESP_LOGI("SGP30", "TVOC: %d,  eCO2: %d\n",  main_sgp30_sensor.TVOC, main_sgp30_sensor.eCO2);
+        // ESP_LOGI("SGP30", "TVOC: %d,  eCO2: %d\n",  main_sgp30_sensor.TVOC, main_sgp30_sensor.eCO2);
         sensor_ui_set(tempData,humData,main_sgp30_sensor.TVOC, main_sgp30_sensor.eCO2);
-        vTaskDelay(pdMS_TO_TICKS(60000));
+        vTaskDelay(pdMS_TO_TICKS(1000));
     }
 }

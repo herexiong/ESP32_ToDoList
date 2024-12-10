@@ -382,7 +382,7 @@ void ui_Screen1_screen_init(void)
     lv_obj_set_align(ui_CountdownLabel1, LV_ALIGN_CENTER);
     lv_label_set_text(ui_CountdownLabel1, LV_SYMBOL_PLAY);
     lv_obj_set_style_text_font(ui_CountdownLabel1, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
-	
+
     ui_CountdownBTN2 = lv_btn_create(ui_CountdownTabPage);
     lv_obj_set_width(ui_CountdownBTN2, 80);
     lv_obj_set_height(ui_CountdownBTN2, 50);
@@ -406,9 +406,211 @@ void ui_Screen1_screen_init(void)
 
     ui_OtherUI = lv_tabview_add_tab(ui_TabView1, "Title 3");
 
-    ui_Button3 = lv_btn_create(ui_OtherUI);
-    lv_obj_set_width(ui_Button3, 100);
-    lv_obj_set_height(ui_Button3, 50);
-    lv_obj_set_align(ui_Button3, LV_ALIGN_CENTER);
+
+
+
+    ui_UsageChart = lv_chart_create(ui_OtherUI);
+    lv_obj_set_width(ui_UsageChart, 250);
+    lv_obj_set_height(ui_UsageChart, 120);
+    lv_obj_set_x(ui_UsageChart, 15);
+    lv_obj_set_y(ui_UsageChart, -70);
+    lv_obj_set_align(ui_UsageChart, LV_ALIGN_CENTER);
+    lv_chart_set_type(ui_UsageChart, LV_CHART_TYPE_LINE);
+    lv_chart_set_axis_tick(ui_UsageChart, LV_CHART_AXIS_PRIMARY_X, 10, 5, 0, 2, true, 50);
+    lv_chart_set_axis_tick(ui_UsageChart, LV_CHART_AXIS_PRIMARY_Y, 10, 5, 5, 2, true, 50);
+    lv_chart_set_axis_tick(ui_UsageChart, LV_CHART_AXIS_SECONDARY_Y, 10, 5, 0, 2, true, 25);
+    //设置栅线格数，点和线的大小
+    lv_chart_set_div_line_count(ui_UsageChart, 10, 10);
+    lv_chart_set_point_count(ui_UsageChart, 100);
+    lv_obj_set_style_line_width(ui_UsageChart, 2, LV_PART_ITEMS);
+    lv_obj_set_style_width(ui_UsageChart, 1, LV_PART_INDICATOR);
+
+    // lv_chart_series_t * ui_UsageChart_series_1 = lv_chart_add_series(ui_UsageChart, lv_color_hex(0xF30303),
+    //                                                                  LV_CHART_AXIS_PRIMARY_Y);
+    ui_UsageChart_series_1 = lv_chart_add_series(ui_UsageChart, lv_color_hex(0xF30303),LV_CHART_AXIS_PRIMARY_Y);
+
+    // static lv_coord_t ui_UsageChart_series_1_array[] = { 10, 20, 40, 80, 80, 40, 20, 10, 0, 90, 100 };
+    // lv_chart_set_ext_y_array(ui_UsageChart, ui_UsageChart_series_1, ui_UsageChart_series_1_array);
+    // lv_chart_series_t * ui_UsageChart_series_2 = lv_chart_add_series(ui_UsageChart, lv_color_hex(0x20C349),
+    //                                                                  LV_CHART_AXIS_SECONDARY_Y);
+    ui_UsageChart_series_2 = lv_chart_add_series(ui_UsageChart, lv_color_hex(0x20C349),LV_CHART_AXIS_PRIMARY_Y);
+    // static lv_coord_t ui_UsageChart_series_2_array[] = { 0, 10, 20, 40, 80, 80, 40, 20, 10, 0 };
+    // lv_chart_set_ext_y_array(ui_UsageChart, ui_UsageChart_series_2, ui_UsageChart_series_2_array);
+
+    ui_CpuTempBar = lv_bar_create(ui_OtherUI);
+    lv_bar_set_value(ui_CpuTempBar, 25, LV_ANIM_OFF);
+    lv_bar_set_start_value(ui_CpuTempBar, 0, LV_ANIM_OFF);
+    lv_obj_set_width(ui_CpuTempBar, 184);
+    lv_obj_set_height(ui_CpuTempBar, 11);
+    lv_obj_set_x(ui_CpuTempBar, 65);
+    lv_obj_set_y(ui_CpuTempBar, 25);
+
+    ui_NetUpLabel = lv_label_create(ui_OtherUI);
+    lv_obj_set_width(ui_NetUpLabel, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_NetUpLabel, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_NetUpLabel, 0);
+    lv_obj_set_y(ui_NetUpLabel, 120);
+    lv_obj_set_align(ui_NetUpLabel, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_NetUpLabel, "Update");
+
+    ui_NetDwLabel = lv_label_create(ui_OtherUI);
+    lv_obj_set_width(ui_NetDwLabel, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_NetDwLabel, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_NetDwLabel, 0);
+    lv_obj_set_y(ui_NetDwLabel, 150);
+    lv_obj_set_align(ui_NetDwLabel, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_NetDwLabel, "Download");
+
+    ui_CpuTitleLabel = lv_label_create(ui_OtherUI);
+    lv_obj_set_width(ui_CpuTitleLabel, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_CpuTitleLabel, LV_SIZE_CONTENT);    /// 1
+    lv_label_set_text(ui_CpuTitleLabel, "CPU Model");
+    lv_obj_set_style_text_color(ui_CpuTitleLabel, lv_color_hex(0xF30303), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_opa(ui_CpuTitleLabel, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_CpuTitleLabel, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    ui_GpuTitleLabel = lv_label_create(ui_OtherUI);
+    lv_obj_set_width(ui_GpuTitleLabel, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_GpuTitleLabel, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_GpuTitleLabel, 0);
+    lv_obj_set_y(ui_GpuTitleLabel, 40);
+    lv_label_set_text(ui_GpuTitleLabel, "GPU Model");
+    lv_obj_set_style_text_color(ui_GpuTitleLabel, lv_color_hex(0x20C349), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_opa(ui_GpuTitleLabel, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_GpuTitleLabel, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    ui_RamBar = lv_bar_create(ui_OtherUI);
+    lv_bar_set_value(ui_RamBar, 50, LV_ANIM_OFF);
+    lv_bar_set_start_value(ui_RamBar, 0, LV_ANIM_OFF);
+    lv_obj_set_width(ui_RamBar, 70);
+    lv_obj_set_height(ui_RamBar, 75);
+    lv_obj_set_x(ui_RamBar, 10);
+    lv_obj_set_y(ui_RamBar, 235);
+    lv_obj_set_style_radius(ui_RamBar, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    lv_obj_set_style_radius(ui_RamBar, 0, LV_PART_INDICATOR | LV_STATE_DEFAULT);
+
+    ui_RamLabel = lv_label_create(ui_OtherUI);
+    lv_obj_set_width(ui_RamLabel, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_RamLabel, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_RamLabel, 27);
+    lv_obj_set_y(ui_RamLabel, 310);
+    lv_label_set_text(ui_RamLabel, "RAM");
+
+    ui_GRamBar = lv_bar_create(ui_OtherUI);
+    lv_bar_set_value(ui_GRamBar, 50, LV_ANIM_OFF);
+    lv_bar_set_start_value(ui_GRamBar, 0, LV_ANIM_OFF);
+    lv_obj_set_width(ui_GRamBar, 70);
+    lv_obj_set_height(ui_GRamBar, 75);
+    lv_obj_set_x(ui_GRamBar, 170);
+    lv_obj_set_y(ui_GRamBar, 235);
+    lv_obj_set_style_radius(ui_GRamBar, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    lv_obj_set_style_radius(ui_GRamBar, 0, LV_PART_INDICATOR | LV_STATE_DEFAULT);
+
+    ui_GRamLabel = lv_label_create(ui_OtherUI);
+    lv_obj_set_width(ui_GRamLabel, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_GRamLabel, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_GRamLabel, 183);
+    lv_obj_set_y(ui_GRamLabel, 310);
+    lv_label_set_text(ui_GRamLabel, "GRAM");
+
+    ui_GpuPowerLabel = lv_label_create(ui_OtherUI);
+    lv_obj_set_width(ui_GpuPowerLabel, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_GpuPowerLabel, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_GpuPowerLabel, 20);
+    lv_obj_set_y(ui_GpuPowerLabel, 63);
+    lv_label_set_text(ui_GpuPowerLabel, "20.3W");
+
+    ui_CpuPowerLabel = lv_label_create(ui_OtherUI);
+    lv_obj_set_width(ui_CpuPowerLabel, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_CpuPowerLabel, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_CpuPowerLabel, 20);
+    lv_obj_set_y(ui_CpuPowerLabel, 23);
+    lv_label_set_text(ui_CpuPowerLabel, "17.6W");
+
+    ui_CpuTempLabel = lv_label_create(ui_OtherUI);
+    lv_obj_set_width(ui_CpuTempLabel, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_CpuTempLabel, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_CpuTempLabel, 255);
+    lv_obj_set_y(ui_CpuTempLabel, 23);
+    lv_label_set_text(ui_CpuTempLabel, "46.7°");
+
+    ui_GpuTempLabel = lv_label_create(ui_OtherUI);
+    lv_obj_set_width(ui_GpuTempLabel, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_GpuTempLabel, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_GpuTempLabel, 255);
+    lv_obj_set_y(ui_GpuTempLabel, 63);
+    lv_label_set_text(ui_GpuTempLabel, "45.2°");
+
+    ui_GpuTempBar = lv_bar_create(ui_OtherUI);
+    lv_bar_set_value(ui_GpuTempBar, 25, LV_ANIM_OFF);
+    lv_bar_set_start_value(ui_GpuTempBar, 0, LV_ANIM_OFF);
+    lv_obj_set_width(ui_GpuTempBar, 183);
+    lv_obj_set_height(ui_GpuTempBar, 11);
+    lv_obj_set_x(ui_GpuTempBar, 65);
+    lv_obj_set_y(ui_GpuTempBar, 65);
+
+    ui_RamUsedLabel = lv_label_create(ui_OtherUI);
+    lv_obj_set_width(ui_RamUsedLabel, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_RamUsedLabel, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_RamUsedLabel, 85);
+    lv_obj_set_y(ui_RamUsedLabel, 296);
+    lv_label_set_text(ui_RamUsedLabel, "14.4/28G");
+
+    ui_RamUsageLabel = lv_label_create(ui_OtherUI);
+    lv_obj_set_width(ui_RamUsageLabel, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_RamUsageLabel, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_RamUsageLabel, 85);
+    lv_obj_set_y(ui_RamUsageLabel, 275);
+    lv_label_set_text(ui_RamUsageLabel, "40%");
+
+    ui_GRamUsedLabel = lv_label_create(ui_OtherUI);
+    lv_obj_set_width(ui_GRamUsedLabel, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_GRamUsedLabel, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_GRamUsedLabel, 245);
+    lv_obj_set_y(ui_GRamUsedLabel, 296);
+    lv_label_set_text(ui_GRamUsedLabel, "2.3/8G");
+
+    ui_GRamUsageLabel = lv_label_create(ui_OtherUI);
+    lv_obj_set_width(ui_GRamUsageLabel, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_GRamUsageLabel, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_GRamUsageLabel, 245);
+    lv_obj_set_y(ui_GRamUsageLabel, 275);
+    lv_label_set_text(ui_GRamUsageLabel, "32%");
+
+    ui_DwSpeedLabel = lv_label_create(ui_OtherUI);
+    lv_obj_set_width(ui_DwSpeedLabel, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_DwSpeedLabel, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_DwSpeedLabel, 110);
+    lv_obj_set_y(ui_DwSpeedLabel, 150);
+    lv_obj_set_align(ui_DwSpeedLabel, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_DwSpeedLabel, "10.2kb/s");
+
+    ui_UpSpeedLabel = lv_label_create(ui_OtherUI);
+    lv_obj_set_width(ui_UpSpeedLabel, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_UpSpeedLabel, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_UpSpeedLabel, 110);
+    lv_obj_set_y(ui_UpSpeedLabel, 120);
+    lv_obj_set_align(ui_UpSpeedLabel, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_UpSpeedLabel, "300kb/s");
+
+    ui_NetTitleLabel = lv_label_create(ui_OtherUI);
+    lv_obj_set_width(ui_NetTitleLabel, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_NetTitleLabel, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_NetTitleLabel, -100);
+    lv_obj_set_y(ui_NetTitleLabel, 135);
+    lv_obj_set_align(ui_NetTitleLabel, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_NetTitleLabel, "Internet");
+    lv_obj_set_style_text_font(ui_NetTitleLabel, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    ui_MonitorTime = lv_label_create(ui_OtherUI);
+    lv_obj_set_width(ui_MonitorTime, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_MonitorTime, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_MonitorTime, 0);
+    lv_obj_set_y(ui_MonitorTime, 190);
+    lv_obj_set_align(ui_MonitorTime, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_MonitorTime, "20:48");
+    lv_obj_set_style_text_font(ui_MonitorTime, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
 
 }

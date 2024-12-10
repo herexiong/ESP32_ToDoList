@@ -64,7 +64,31 @@ extern lv_obj_t * ui_CountdownBTN2;
 extern lv_obj_t * ui_CountdownLabel2;
 extern lv_obj_t * ui_TimingTabPage;
 extern lv_obj_t * ui_OtherUI;
-extern lv_obj_t * ui_Button3;
+extern lv_obj_t * ui_UsageChart;
+extern lv_chart_series_t * ui_UsageChart_series_1;
+extern lv_chart_series_t * ui_UsageChart_series_2;
+extern lv_obj_t * ui_CpuTempBar;
+extern lv_obj_t * ui_NetUpLabel;
+extern lv_obj_t * ui_NetDwLabel;
+extern lv_obj_t * ui_CpuTitleLabel;
+extern lv_obj_t * ui_GpuTitleLabel;
+extern lv_obj_t * ui_RamBar;
+extern lv_obj_t * ui_RamLabel;
+extern lv_obj_t * ui_GRamBar;
+extern lv_obj_t * ui_GRamLabel;
+extern lv_obj_t * ui_GpuPowerLabel;
+extern lv_obj_t * ui_CpuPowerLabel;
+extern lv_obj_t * ui_CpuTempLabel;
+extern lv_obj_t * ui_GpuTempLabel;
+extern lv_obj_t * ui_GpuTempBar;
+extern lv_obj_t * ui_RamUsedLabel;
+extern lv_obj_t * ui_RamUsageLabel;
+extern lv_obj_t * ui_GRamUsedLabel;
+extern lv_obj_t * ui_GRamUsageLabel;
+extern lv_obj_t * ui_DwSpeedLabel;
+extern lv_obj_t * ui_UpSpeedLabel;
+extern lv_obj_t * ui_NetTitleLabel;
+extern lv_obj_t * ui_MonitorTime;
 extern lv_obj_t * ui____initial_actions0;
 extern lv_obj_t * ui_WeatherImage;
 
@@ -78,6 +102,11 @@ void weather_ui_set(char *weather,char *code,char *temp,char *city);
 void sensor_ui_set(float Temp,float Humi,int TVOC,int eCO2);
 void Countdown_ui_set(int hour,int min,int sec,int endFlag);
 void Countdown_btn_cb(lv_obj_t *event);
+
+void MonitorCPU_ui_set(char* title , char* power , char* usage , char* temp);
+void MonitorGPU_ui_set(char* title , char* power , char* usage , char* temp, char* usedram,char *totalram);
+void MonitorRAM_ui_set(char* usage , char* usedram,char *totalram);
+void MonitorNET_ui_set(char* title , char* upload , char* download);
 
 void ui_init(void);
 
