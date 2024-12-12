@@ -1,6 +1,7 @@
 #include "lv_port_disp.h"
 #include "dev_board.h"
 #include "esp_heap_caps.h"
+#include "esp_lcd_backlight.h"
 
 #define TAG "disp_driver"
 
@@ -10,6 +11,8 @@ static esp_lcd_panel_handle_t panel_handle;
 static lv_disp_drv_t disp_drv;
 static lv_color_t *buf1;
 static lv_color_t *buf2;
+//用于控制屏幕PWM背光
+disp_backlight_h bckl_handle;
 
 static bool example_notify_lvgl_flush_ready(esp_lcd_panel_io_handle_t panel_io, esp_lcd_panel_io_event_data_t *edata, void *user_ctx)
 {
@@ -31,12 +34,22 @@ static void example_lvgl_flush_cb(lv_disp_drv_t *drv, const lv_area_t *area, lv_
 
 void disp_8080_init(void){
     ESP_LOGI(TAG, "Turn off LCD backlight");
-    gpio_config_t bk_gpio_config = {
-        .mode = GPIO_MODE_OUTPUT,
-        .pin_bit_mask = 1ULL << SCREEN_PIN_NUM_BK_LIGHT
+    // gpio_config_t bk_gpio_config = {
+    //     .mode = GPIO_MODE_OUTPUT,
+    //     .pin_bit_mask = 1ULL << SCREEN_PIN_NUM_BK_LIGHT
+    // };
+    // ESP_ERROR_CHECK(gpio_config(&bk_gpio_config));
+    // gpio_set_level(SCREEN_PIN_NUM_BK_LIGHT, EXAMPLE_LCD_BK_LIGHT_OFF_LEVEL);
+
+    const disp_backlight_config_t bckl_config = {
+        .gpio_num = SCREEN_PIN_NUM_BK_LIGHT,
+        .pwm_control = true,
+        .output_invert = true, // Backlight on high
+        .timer_idx = 0,
+        .channel_idx = 0 // @todo this prevents us from having two PWM controlled displays
     };
-    ESP_ERROR_CHECK(gpio_config(&bk_gpio_config));
-    gpio_set_level(SCREEN_PIN_NUM_BK_LIGHT, EXAMPLE_LCD_BK_LIGHT_OFF_LEVEL);
+    bckl_handle = disp_backlight_new(&bckl_config);
+    disp_backlight_set(bckl_handle, 100);
 
     ESP_LOGI(TAG, "Initialize Intel 8080 bus");
     esp_lcd_i80_bus_handle_t i80_bus = NULL;
@@ -127,5 +140,14 @@ void lv_port_disp_backlight(bool state){
     }
     else{
         gpio_set_level(SCREEN_PIN_NUM_BK_LIGHT, !EXAMPLE_LCD_BK_LIGHT_OFF_LEVEL);
+    }
+}
+
+void lv_backlight_set(int brightness){
+    if (brightness >= 0 && brightness <=100)
+    {
+        disp_backlight_set(bckl_handle, brightness);
+    }else{
+        disp_backlight_set(bckl_handle, 100);
     }
 }

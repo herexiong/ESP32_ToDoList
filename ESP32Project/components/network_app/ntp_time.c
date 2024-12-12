@@ -62,6 +62,7 @@ void time_task(void *param){
     {
         time(&now);
         localtime_r(&now, &timeinfo);
+        //防止频繁调用更新UI
         if (timeinfo.tm_min != last_min)
         {
             time_ui_set(timeinfo.tm_hour,timeinfo.tm_min,timeinfo.tm_mon,timeinfo.tm_mday,timeinfo.tm_wday);

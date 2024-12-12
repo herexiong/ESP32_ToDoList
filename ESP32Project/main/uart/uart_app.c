@@ -52,12 +52,6 @@ void uart_task(void *arg)
         // Read data from the UART
         int len = uart_read_bytes(UART_PORT_NUM, data, (UART_BUFFER_SIZE - 1), 20 / portTICK_RATE_MS);
 		
-        // Write data back to the UART
-        // uart_write_bytes(UART_PORT_NUM, (const char *) data, len);
-        // if (len) {
-        //     data[len] = '\0';
-        //     ESP_LOGI(TAG, "Recv str: %s", (char *) data);
-        // }
         if (len) 
             parse_uart_json((char *)data);
         vTaskDelay(pdMS_TO_TICKS(10));

@@ -300,17 +300,19 @@ void MonitorCPU_ui_set(char* title , char* power , char* usage , char* temp){
                 break;
             }
         }
-
+        lv_tabview_set_act(ui_TabView1, 2, LV_ANIM_ON);//仅在上位机开始时跳转一次
         lv_label_set_text(ui_CpuTitleLabel,title);
         init = 1;
     }
     lv_label_set_text(ui_CpuPowerLabel,power);
 
-    usage[strlen(usage)-1] = '\0';//去掉百分号
-    lv_chart_set_next_value(ui_UsageChart, ui_UsageChart_series_1, atoi(usage));
+    // usage[strlen(usage)-1] = '\0';//去掉百分号
+    if(atoi(usage) <= 100)
+        lv_chart_set_next_value(ui_UsageChart, ui_UsageChart_series_1, atoi(usage));
 
     lv_label_set_text(ui_CpuTempLabel,temp);
-    lv_bar_set_value(ui_CpuTempBar,atof(temp),LV_ANIM_ON);
+    if(atof(temp) <= 100)
+        lv_bar_set_value(ui_CpuTempBar,atof(temp),LV_ANIM_ON);
 }
 void MonitorGPU_ui_set(char* title , char* power , char* usage , char* temp, char* usedram,char *totalram){
     static uint8_t init = 0;
@@ -320,73 +322,73 @@ void MonitorGPU_ui_set(char* title , char* power , char* usage , char* temp, cha
     }
     lv_label_set_text(ui_GpuPowerLabel,power);
 
-    usage[strlen(usage)-1] = '\0';//去掉百分号
-    lv_chart_set_next_value(ui_UsageChart, ui_UsageChart_series_2, atoi(usage));
+    // usage[strlen(usage)-1] = '\0';//去掉百分号
+    if(atoi(usage) <= 100)
+        lv_chart_set_next_value(ui_UsageChart, ui_UsageChart_series_2, atoi(usage));
 
     lv_label_set_text(ui_GpuTempLabel,temp);
-    lv_bar_set_value(ui_GpuTempBar,atof(temp),LV_ANIM_ON);
+    if(atof(temp) <= 100)
+        lv_bar_set_value(ui_GpuTempBar,atof(temp),LV_ANIM_ON);
     
     char rambuffer[20];
     char ramusagebuffer[20];
-    float usedram_num = 0,totalram_num = 0;
+    float usedram_num = 0,totalram_num = 1.0;//0不能做被除数，所以初始化为1
     if (usedram[strlen(usedram)-1] == 'M')
     {
-        usedram[strlen(usedram)-1] = '\0';
+        // usedram[strlen(usedram)-1] = '\0';
         usedram_num =(float)atoi(usedram)/1024.0;
     }
-    else if (usedram[strlen(usedram)-1] == 'G')
+    else
     {
-        usedram[strlen(usedram)-1] = '\0';
+        // usedram[strlen(usedram)-1] = '\0';
         usedram_num = atof(usedram);
     }
     
     if (totalram[strlen(totalram)-1] == 'M')
     {
-        totalram[strlen(totalram)-1] = '\0';
+        // totalram[strlen(totalram)-1] = '\0';
         totalram_num = (float)atoi(totalram)/(float)1024.0;
     }
-    else if (totalram[strlen(totalram)-1] == 'G')
+    else
     {
-        totalram[strlen(totalram)-1] = '\0';
+        // totalram[strlen(totalram)-1] = '\0';
         totalram_num = atof(totalram);
     }
     sprintf(rambuffer,"%.1f/%.1fG",usedram_num,totalram_num);
     lv_label_set_text(ui_GRamUsedLabel,rambuffer);
-    float usagep = usedram_num/totalram_num*100;
+    float usagep = usedram_num/totalram_num*100 > 100 ? 100 : usedram_num/totalram_num*100;//防止超过100
     sprintf(ramusagebuffer,"%.2f%%",usagep);
     lv_label_set_text(ui_GRamUsageLabel,ramusagebuffer);
     lv_bar_set_value(ui_GRamBar,(int)usagep,LV_ANIM_ON);
-    // lv_label_set_text(ui_CpuUsageLabel,usage);
-    // lv_label_set_text(ui_GRamUsedLabel,used);
 }
-void MonitorRAM_ui_set(char* usage , char* usedram,char *totalram){
+void MonitorRAM_ui_set(char* usage , char* usedram , char *totalram){
     char rambuffer[20];
     char ramusagebuffer[20];
-    float usedram_num = 0,totalram_num = 0;
+    float usedram_num = 0,totalram_num = 1.0;//0不能做被除数，所以初始化为1
     if (usedram[strlen(usedram)-1] == 'M')
     {
-        usedram[strlen(usedram)-1] = '\0';
+        // usedram[strlen(usedram)-1] = '\0';
         usedram_num = atof(usedram)/1024.0;
     }
-    else if (usedram[strlen(usedram)-1] == 'G')
+    else
     {
-        usedram[strlen(usedram)-1] = '\0';
+        // usedram[strlen(usedram)-1] = '\0';
         usedram_num = atof(usedram);
     }
     
     if (totalram[strlen(totalram)-1] == 'M')
     {
-        totalram[strlen(totalram)-1] = '\0';
+        // totalram[strlen(totalram)-1] = '\0';
         totalram_num = atof(totalram)/1024.0;
     }
-    else if (totalram[strlen(totalram)-1] == 'G')
+    else
     {
-        totalram[strlen(totalram)-1] = '\0';
+        // totalram[strlen(totalram)-1] = '\0';
         totalram_num = atof(totalram);
     }
     sprintf(rambuffer,"%.1f/%.1fG",usedram_num,totalram_num);
     lv_label_set_text(ui_RamUsedLabel,rambuffer);
-    float usagep = usedram_num/totalram_num*100;
+    float usagep = usedram_num/totalram_num*100 > 100 ? 100 : usedram_num/totalram_num*100;//防止超过100
     sprintf(ramusagebuffer,"%.2f%%",usagep);
     lv_label_set_text(ui_RamUsageLabel,ramusagebuffer);
     lv_bar_set_value(ui_RamBar,(int)usagep,LV_ANIM_ON);

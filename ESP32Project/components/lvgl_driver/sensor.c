@@ -5,6 +5,11 @@
 #include "i2c.h"
 #include "ui.h"
 
+#include "esp_adc_cal.h"
+#include "driver/adc.h"
+
+#include "lv_port_disp.h"
+
 #define TAG "SENSOR"
 
 typedef struct sgp30_dev {
@@ -297,7 +302,67 @@ static void sgp30_set_humidity(sgp30_dev_t *sensor, uint32_t absolute_humidity) 
     sgp30_execute_command(sensor, ah_command, 5, 20, NULL, 0);
 }
 
+ 
+static void ADC_init(void) {
+    adc1_config_width(ADC_WIDTH_BIT_12);
+    adc1_config_channel_atten(ADC1_CHANNEL_5, ADC_ATTEN_DB_11);
+}
+
+#define FILTER_WINDOW_SIZE 5 // 滑动窗口大小
+static int filter_buffer[FILTER_WINDOW_SIZE];
+static int filter_index = 0;
+
+int smooth_adc_reading() {    
+    filter_buffer[filter_index] = adc1_get_raw(ADC1_CHANNEL_5);
+    filter_index = (filter_index + 1) % FILTER_WINDOW_SIZE;
+
+    int sum = 0;
+    for (int i = 0; i < FILTER_WINDOW_SIZE; i++) {
+        sum += filter_buffer[i];
+    }
+
+    return sum / FILTER_WINDOW_SIZE;
+}
+
+void lightSensor_task(void *param) {
+    ADC_init();
+    int light_data = 0;
+    int bright = 100; // 初始亮度
+    int prev_light_data = 0;
+
+    while (1) {
+        // 获取滤波后的光敏电阻值
+        light_data = smooth_adc_reading();
+
+        // 根据光敏电阻值计算目标亮度
+        int target_bright = (light_data >= 0 && light_data <= 300) ? 7 + (int)(light_data * 0.3) : 100;
+
+        // 动态调整亮度（缓慢过渡）
+        if (abs(light_data - prev_light_data) > 50) {
+            // 环境光变化较快，快速调整亮度
+            bright += (target_bright > bright) ? 10 : -10;
+        } else {
+            // 环境光变化较慢，缓慢调整亮度
+            bright += (target_bright - bright) / 10;
+        }
+
+        // 确保亮度在有效范围内
+        if (bright < 7) bright = 7;
+        if (bright > 100) bright = 100;
+
+        // 设置背光亮度
+        lv_backlight_set(bright);
+
+        // 更新上一轮光敏电阻值
+        prev_light_data = light_data;
+
+        // 延时 100ms
+        vTaskDelay(pdMS_TO_TICKS(100));
+    }
+}
+
 void Sensor_task(void *param){
+    xTaskCreate(lightSensor_task,"lightSensor_task",4*1024,NULL,5,NULL);
     while(sht30_init()!=ESP_OK)
         vTaskDelay(pdMS_TO_TICKS(10));
     //SGP30初始化
@@ -318,7 +383,7 @@ void Sensor_task(void *param){
     uint16_t eco2_baseline, tvoc_baseline;
     sgp30_get_IAQ_baseline(&main_sgp30_sensor, &eco2_baseline, &tvoc_baseline);
     ESP_LOGI(TAG, "BASELINES - TVOC: %d,  eCO2: %d",  tvoc_baseline, eco2_baseline);
-    
+
     while(1){
         
         if(sht30_get_value()==ESP_OK)   //获取温湿度
@@ -333,6 +398,8 @@ void Sensor_task(void *param){
         //将值通过串口发送出去
         // ESP_LOGI("SGP30", "TVOC: %d,  eCO2: %d\n",  main_sgp30_sensor.TVOC, main_sgp30_sensor.eCO2);
         sensor_ui_set(tempData,humData,main_sgp30_sensor.TVOC, main_sgp30_sensor.eCO2);
+
         vTaskDelay(pdMS_TO_TICKS(1000));
     }
 }
+

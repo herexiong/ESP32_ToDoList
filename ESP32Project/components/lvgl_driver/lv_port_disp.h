@@ -36,4 +36,6 @@ void lv_port_disp_init(void);
 
 void lv_port_disp_backlight(bool state);
 
+void lv_backlight_set(int brightness);
+
 #endif

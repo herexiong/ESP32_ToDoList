@@ -39,7 +39,7 @@ void lv_task(void *param)
     ESP_ERROR_CHECK(esp_timer_start_periodic(periodic_timer, 1 * 1000));
 
     ui_init();
-    lv_port_disp_backlight(true);//在UI初始化后打开背光避免花屏
+    // lv_port_disp_backlight(true);//在UI初始化后打开背光避免花屏
     //时间任务
     xTaskCreate(time_task,"time_task",4*1024,NULL,5,NULL);
     //天气任务

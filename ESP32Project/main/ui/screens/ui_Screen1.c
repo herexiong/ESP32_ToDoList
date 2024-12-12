@@ -602,7 +602,7 @@ void ui_Screen1_screen_init(void)
     lv_obj_set_y(ui_NetTitleLabel, 135);
     lv_obj_set_align(ui_NetTitleLabel, LV_ALIGN_CENTER);
     lv_label_set_text(ui_NetTitleLabel, "Internet");
-    lv_obj_set_style_text_font(ui_NetTitleLabel, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_NetTitleLabel, &font_harmony_sans_20, 0);
 
     ui_MonitorTime = lv_label_create(ui_OtherUI);
     lv_obj_set_width(ui_MonitorTime, LV_SIZE_CONTENT);   /// 1
@@ -612,5 +612,4 @@ void ui_Screen1_screen_init(void)
     lv_obj_set_align(ui_MonitorTime, LV_ALIGN_CENTER);
     lv_label_set_text(ui_MonitorTime, "20:48");
     lv_obj_set_style_text_font(ui_MonitorTime, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
-
 }
