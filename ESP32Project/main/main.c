@@ -59,6 +59,8 @@ static void hardware_init(void){
     ESP_ERROR_CHECK(example_connect());
 }
 
+//网络服务在互联网断开时没有关闭访问，可能会导致程序崩溃
+
 void app_main(void)
 {
     //初始化硬件
