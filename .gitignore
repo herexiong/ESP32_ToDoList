@@ -11,3 +11,7 @@
 ./SquareLineProject/Export/
 ./SquareLineProject/autosave/
 ./SquareLineProject/backup/
+
+HxMonitor/HxMonitor/build/
+
+CmdMonitor/CmdMonitor/bin/

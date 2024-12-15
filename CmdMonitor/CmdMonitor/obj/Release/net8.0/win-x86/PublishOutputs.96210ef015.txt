@@ -1,0 +1,4 @@
+D:\project\CmdMonitor\CmdMonitor\bin\Release\net8.0\publish\win-x86\CmdMonitor.pdb
+D:\project\CmdMonitor\CmdMonitor\bin\Release\net8.0\publish\win-x86\MonoPosixHelper.dll
+D:\project\CmdMonitor\CmdMonitor\bin\Release\net8.0\publish\win-x86\libMonoPosixHelper.dll
+D:\project\CmdMonitor\CmdMonitor\bin\Release\net8.0\publish\win-x86\CmdMonitor.exe

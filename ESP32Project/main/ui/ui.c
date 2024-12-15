@@ -205,7 +205,7 @@ void weather_ui_set(char *weather,char *code,char *temp,char *city){
     lv_obj_add_flag(ui_Screen1, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
     sprintf(tempBuffer,"%s°",temp);
 
-    ESP_LOGE(TAG,"%s,%s",tempBuffer,codeBuffer);
+    // ESP_LOGE(TAG,"%s,%s",tempBuffer,codeBuffer);
     lv_label_set_text(ui_WeatherTempValLabel,tempBuffer);
     lv_label_set_text(ui_Weather,weather);
     lv_label_set_text(ui_WeatherLabel,city);

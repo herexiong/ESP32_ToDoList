@@ -391,7 +391,7 @@ void Sensor_task(void *param){
             //算法参考sht30 datasheet
             tempData =( ( (  (sht30_buf[0]*256) +sht30_buf[1]) *175   )/65535.0  -45  );
             humData =  ( ( (sht30_buf[3]*256) + (sht30_buf[4]) )*100/65535.0) ;
-            ESP_LOGI("SHT30", "temp:%4.2f C   hum:%4.2f %%RH \r", tempData, humData); //℃打印出来是乱码
+            //ESP_LOGI("SHT30", "temp:%4.2f C   hum:%4.2f %%RH \r", tempData, humData); //℃打印出来是乱码
         }
         //SGP30数据测量及计算
         sgp30_IAQ_measure(&main_sgp30_sensor);
