@@ -246,52 +246,19 @@ void ui_Screen1_screen_init(void)
     lv_obj_add_event_cb(ui_MusicControl3, audio_btn_cb, LV_EVENT_CLICKED, NULL);
     lv_obj_add_flag(ui_MusicControl3,LV_OBJ_FLAG_CLICKABLE);
 
-    ui_ToDoListContainer = lv_obj_create(ui_MainUI);
-    lv_obj_remove_style_all(ui_ToDoListContainer);
-    lv_obj_set_width(ui_ToDoListContainer, 300);
-    lv_obj_set_height(ui_ToDoListContainer, 291);
-    lv_obj_set_x(ui_ToDoListContainer, 0);
-    lv_obj_set_y(ui_ToDoListContainer, 80);
-    lv_obj_set_align(ui_ToDoListContainer, LV_ALIGN_CENTER);
-    lv_obj_clear_flag(ui_ToDoListContainer, LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_SCROLLABLE);      /// Flags
-    lv_obj_set_style_radius(ui_ToDoListContainer, 20, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_color(ui_ToDoListContainer, lv_color_hex(0x87C1B8), LV_PART_MAIN | LV_STATE_DEFAULT);
-    // lv_obj_set_style_bg_color(ui_ToDoListContainer, lv_color_hex(0x0000FF), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_opa(ui_ToDoListContainer, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-
-    ui_Button11 = lv_btn_create(ui_ToDoListContainer);
-    lv_obj_set_width(ui_Button11, 276);
-    lv_obj_set_height(ui_Button11, 50);
-    lv_obj_set_x(ui_Button11, 0);
-    lv_obj_set_y(ui_Button11, -103);
-    lv_obj_set_align(ui_Button11, LV_ALIGN_CENTER);
-    lv_obj_set_style_radius(ui_Button11, 12, LV_PART_MAIN | LV_STATE_DEFAULT);
-
-    ui_Checkbox2 = lv_checkbox_create(ui_Button11);
-    lv_checkbox_set_text(ui_Checkbox2, "ToDoList_1");
-    lv_obj_set_width(ui_Checkbox2, LV_SIZE_CONTENT);   /// 1
-    lv_obj_set_height(ui_Checkbox2, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_Checkbox2, -71);
-    lv_obj_set_y(ui_Checkbox2, 0);
-    lv_obj_set_align(ui_Checkbox2, LV_ALIGN_CENTER);
-    lv_obj_add_flag(ui_Checkbox2, LV_OBJ_FLAG_SCROLL_ON_FOCUS);     /// Flags
-
-    ui_Button1 = lv_btn_create(ui_ToDoListContainer);
-    lv_obj_set_width(ui_Button1, 276);
-    lv_obj_set_height(ui_Button1, 50);
-    lv_obj_set_x(ui_Button1, 1);
-    lv_obj_set_y(ui_Button1, -42);
-    lv_obj_set_align(ui_Button1, LV_ALIGN_CENTER);
-    lv_obj_set_style_radius(ui_Button1, 12, LV_PART_MAIN | LV_STATE_DEFAULT);
-
-    ui_Checkbox1 = lv_checkbox_create(ui_Button1);
-    lv_checkbox_set_text(ui_Checkbox1, "ToDoList_2");
-    lv_obj_set_width(ui_Checkbox1, LV_SIZE_CONTENT);   /// 1
-    lv_obj_set_height(ui_Checkbox1, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_Checkbox1, -71);
-    lv_obj_set_y(ui_Checkbox1, 0);
-    lv_obj_set_align(ui_Checkbox1, LV_ALIGN_CENTER);
-    lv_obj_add_flag(ui_Checkbox1, LV_OBJ_FLAG_SCROLL_ON_FOCUS);     /// Flags
+    ui_Todoist_list = lv_list_create(ui_MainUI);
+    lv_obj_set_x(ui_Todoist_list, 0);
+    lv_obj_set_y(ui_Todoist_list, 80);
+    lv_obj_set_align(ui_Todoist_list, LV_ALIGN_CENTER);
+    lv_obj_set_size(ui_Todoist_list, 300, 291);
+    lv_obj_set_style_radius(ui_Todoist_list, 20, LV_PART_MAIN| LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_color(ui_Todoist_list, lv_color_hex(0xabd4bb), LV_PART_MAIN| LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(ui_Todoist_list, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_Todoist_list, &font_harmony_sans_20, 0);
+    lv_obj_set_style_border_width(ui_Todoist_list, 0, LV_PART_MAIN);
+    // 调整为需要的像素间距
+    lv_obj_set_style_pad_top(ui_Todoist_list, 10, LV_PART_MAIN);
+    lv_obj_set_style_pad_row(ui_Todoist_list, 10, LV_PART_MAIN); 
 
     ui_TimerUI = lv_tabview_add_tab(ui_TabView1, "Title 2");
 

@@ -22,6 +22,8 @@
 #include "sensor.h"
 //串口
 #include "uart_app.h"
+//todoist
+#include "todoist.h"
 
 #define TAG "main"
  
@@ -77,6 +79,8 @@ void app_main(void)
     xTaskCreate(Sensor_task,"Sensor_task",4*1024,NULL,5,NULL);
     //串口任务
     xTaskCreate(uart_task, "uart_echo_task", 8*1024, NULL, 5, NULL);
+    //todoist同步任务
+    xTaskCreate(todoist_task, "todoist_task", 8*1024, NULL, 5, NULL);
     
     // vTaskDelay(pdMS_TO_TICKS(1000));
     // xTaskCreate(print_task,"print",8*1024,NULL,5,NULL);

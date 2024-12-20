@@ -44,11 +44,7 @@ extern lv_obj_t * ui_MusicTotalTime;
 extern lv_obj_t * ui_MusicControl1;
 extern lv_obj_t * ui_MusicControl2;
 extern lv_obj_t * ui_MusicControl3;
-extern lv_obj_t * ui_ToDoListContainer;
-extern lv_obj_t * ui_Button11;
-extern lv_obj_t * ui_Checkbox2;
-extern lv_obj_t * ui_Button1;
-extern lv_obj_t * ui_Checkbox1;
+extern lv_obj_t * ui_Todoist_list;
 extern lv_obj_t * ui_TimerUI;
 extern lv_obj_t * ui_TabView2;
 extern lv_obj_t * ui_CountdownTabPage;
@@ -97,9 +93,24 @@ void change_audio_bar(char *current_time,char *total_time,int value);
 void music_bar_cb(lv_obj_t *event);
 lv_res_t audio_btn_cb(lv_obj_t *event);
 
+//todoist.c中的结构体
+typedef struct todoistNode
+{
+    struct todoistNode *pre;   // 前向指针
+    struct todoistNode *next;  // 后向指针
+    char *id;                  // 任务的唯一标识符
+    int order;                 // 任务顺序
+    char *content;             // 任务内容
+    char *description;         // 任务描述
+    bool is_visited;           // 节点是否被访问，用于删除节点
+} todoistNode;
+
+void todoist_ui_show(todoistNode *head);
+
 void time_ui_set(int hour , int minute , int month , int monthday , int weekday);
 void weather_ui_set(char *weather,char *code,char *temp,char *city);
 void sensor_ui_set(float Temp,float Humi,int TVOC,int eCO2);
+
 void Countdown_ui_set(int hour,int min,int sec,int endFlag);
 void Countdown_btn_cb(lv_obj_t *event);
 

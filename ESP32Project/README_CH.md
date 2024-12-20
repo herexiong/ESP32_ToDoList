@@ -1,11 +1,15 @@
 ## 环境要求
 + ESP-IDF 4.4.6  
++ LVGL V8.3
 + ESP32S3 N16R8
+## 外设部分
 + SD卡
 + ST7796 显示器,分辨率为320*480
 + GT911电容触摸
-+ LVGL V8.3
++ SGP30传感器
++ SHT30传感器
 + MAX98357模块(音频部分需要)
++ 光敏电阻(自动调节屏幕亮度)
 
 ## 引脚设置
 引脚的相关设置在main文件夹下的board.h中定义  
@@ -62,3 +66,7 @@ bootload | 0x0000 | ./ESP32Project/build/bootloader/bootloader.bin
 partition_table | 0x8000 | ./ESP32Project/build/partition_table/partition-table.bin
 ota_0 | 0x20000 | ./ESP32Project/build/ESP32_ToDoList.bin
 font_hs20|0xF00000| ./ESP32Project/resource_file/font_harmony_sans_20_lv1_lv2.bin| 字体文件，烧录过一次后，更新无需烧录，在工程目录下，release下没有
+
+---  
+
+[ToDoist API Guide](https://developer.todoist.com/guides/#desktop-app-url-schemes)

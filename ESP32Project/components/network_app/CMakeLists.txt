@@ -1,5 +1,4 @@
 idf_component_register(SRC_DIRS "."
                        INCLUDE_DIRS "."
-                       PRIV_REQUIRES 
-                        main
-                        json)
+                       PRIV_REQUIRES main json
+                       EMBED_TXTFILES root_cert.pem)

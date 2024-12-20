@@ -43,11 +43,7 @@ lv_obj_t * ui_MusicTotalTime;
 lv_obj_t * ui_MusicControl1;
 lv_obj_t * ui_MusicControl2;
 lv_obj_t * ui_MusicControl3;
-lv_obj_t * ui_ToDoListContainer;
-lv_obj_t * ui_Button11;
-lv_obj_t * ui_Checkbox2;
-lv_obj_t * ui_Button1;
-lv_obj_t * ui_Checkbox1;
+lv_obj_t * ui_Todoist_list;
 lv_obj_t * ui_TimerUI;
 lv_obj_t * ui_TabView2;
 lv_obj_t * ui_CountdownTabPage;
@@ -224,6 +220,63 @@ void sensor_ui_set(float Temp,float Humi,int TVOC,int eCO2){
     lv_label_set_text(ui_HumiValueLabel, HumiBuffer);
     lv_label_set_text(ui_Co2ValueLabel, eCO2Buffer);
 }
+
+extern void http_post_request(int order);
+
+static void todoist_checkbox_cb(lv_event_t * e){
+   lv_event_code_t code = lv_event_get_code(e);
+   lv_obj_t * obj = lv_event_get_target(e);
+   
+   if((code == LV_EVENT_VALUE_CHANGED) && lv_obj_has_state(obj, LV_STATE_CHECKED)){
+      const char * txt = lv_checkbox_get_text(obj);
+      ESP_LOGI(TAG,"%s:,%s",txt,lv_checkbox_get_text(obj));
+      http_post_request(lv_checkbox_get_text(obj));
+   }
+}
+
+void todoist_ui_show(todoistNode *head){
+    int order = 0;
+    while (head != NULL)
+    {
+        lv_obj_t * temp_btn = NULL;
+        lv_obj_t * temp_checkbox = NULL;
+        temp_btn = lv_obj_get_child(ui_Todoist_list,order);
+        if (temp_btn != NULL)
+        {
+            temp_checkbox = lv_obj_get_child(temp_btn,0);
+            if (temp_checkbox != NULL)
+            {
+                lv_obj_clear_state(temp_checkbox, LV_STATE_CHECKED);
+                lv_checkbox_set_text(temp_checkbox, head->content);
+            }
+        }else{
+            temp_btn = lv_list_add_btn(ui_Todoist_list,NULL,NULL);
+            lv_obj_set_width(temp_btn, 276);
+            lv_obj_set_height(temp_btn, 50);
+            lv_obj_remove_style(temp_btn, NULL, LV_STATE_PRESSED); // 设置无缩放
+            lv_obj_set_style_radius(temp_btn, 12, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_obj_set_style_bg_color(temp_btn, lv_color_hex(0xff5733),LV_STATE_DEFAULT);
+            lv_obj_set_style_bg_color(temp_btn, lv_color_hex(0xCC4529), LV_STATE_PRESSED);// 按下时的颜色
+            lv_obj_set_style_align(temp_btn, LV_ALIGN_CENTER, LV_PART_MAIN);
+
+            temp_checkbox = lv_checkbox_create(temp_btn);
+            lv_checkbox_set_text(temp_checkbox, head->content);
+            lv_obj_set_width(temp_checkbox, LV_SIZE_CONTENT);
+            lv_obj_set_height(temp_checkbox, LV_SIZE_CONTENT);
+            //将content作为参数传入回调
+            lv_obj_add_event_cb(temp_checkbox, todoist_checkbox_cb,  LV_EVENT_VALUE_CHANGED,(void*)(head->content));
+        }
+        order++;
+        head = head->next;
+    }
+    //删除多余节点
+    lv_obj_t * temp_btn = NULL;
+    while ((temp_btn = lv_obj_get_child(ui_Todoist_list,order)) != NULL)
+    {
+        lv_obj_del(temp_btn);
+    }
+}
+
 
 //0->未开启 1->开启运行中 2->开启暂停中
 static int CountdownState = 0;

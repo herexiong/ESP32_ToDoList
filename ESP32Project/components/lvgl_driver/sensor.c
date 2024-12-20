@@ -368,13 +368,13 @@ void Sensor_task(void *param){
     //SGP30初始化
     sgp30_init(&main_sgp30_sensor);
 
+    ESP_LOGI("SGP30", "calibtaion begin");
     do
     {
         sgp30_IAQ_measure(&main_sgp30_sensor);
         vTaskDelay(pdMS_TO_TICKS(1000));
-        ESP_LOGI("SGP30", "calibtaion");
     } while (main_sgp30_sensor.TVOC == 0 && main_sgp30_sensor.eCO2==400);
-    
+    ESP_LOGI("SGP30", "calibtaion end");
 
     float tempData = 0, humData = 0;
 

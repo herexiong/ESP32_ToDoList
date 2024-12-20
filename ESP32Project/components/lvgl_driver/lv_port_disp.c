@@ -33,14 +33,6 @@ static void example_lvgl_flush_cb(lv_disp_drv_t *drv, const lv_area_t *area, lv_
 }
 
 void disp_8080_init(void){
-    ESP_LOGI(TAG, "Turn off LCD backlight");
-    // gpio_config_t bk_gpio_config = {
-    //     .mode = GPIO_MODE_OUTPUT,
-    //     .pin_bit_mask = 1ULL << SCREEN_PIN_NUM_BK_LIGHT
-    // };
-    // ESP_ERROR_CHECK(gpio_config(&bk_gpio_config));
-    // gpio_set_level(SCREEN_PIN_NUM_BK_LIGHT, EXAMPLE_LCD_BK_LIGHT_OFF_LEVEL);
-
     const disp_backlight_config_t bckl_config = {
         .gpio_num = SCREEN_PIN_NUM_BK_LIGHT,
         .pwm_control = true,
@@ -49,7 +41,7 @@ void disp_8080_init(void){
         .channel_idx = 0 // @todo this prevents us from having two PWM controlled displays
     };
     bckl_handle = disp_backlight_new(&bckl_config);
-    disp_backlight_set(bckl_handle, 100);
+    lv_backlight_set(0);
 
     ESP_LOGI(TAG, "Initialize Intel 8080 bus");
     esp_lcd_i80_bus_handle_t i80_bus = NULL;
