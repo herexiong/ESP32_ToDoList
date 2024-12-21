@@ -1,9 +1,20 @@
 #include "sd.h"
 #include "dev_board.h"
 
-#define TAG "SD"
+#include "string.h"
+#include "sdmmc_cmd.h"
+#include "esp_vfs_fat.h"
+#include "driver/sdmmc_host.h"
+#include "driver/spi_common.h"
+#include "esp_err.h"
 
-void sd_init(void){
+#define TAG "SD"
+#define CFG_FILE_ADDR "/sdcard/ToDoList_cfg/sys_cfg.txt"
+#define CFG_MAX_LEN 100
+
+sdmmc_card_t *card;
+
+esp_err_t sd_init(void){
     static int sd_inited = 0;
     if (!sd_inited)
     {
@@ -72,13 +83,61 @@ void sd_init(void){
                 ESP_LOGE(TAG, "Failed to initialize the card (%s). "
                         "Make sure SD card lines have pull-up resistors in place.", esp_err_to_name(ret));
             }
-            return;
+            return ret;
         }
         ESP_LOGI(TAG, "Filesystem mounted");
-        // Card has been initialized, print its properties
         sdmmc_card_print_info(stdout, card);
         sd_inited = 1;
-    }else{
-        return;
     }
+    return ESP_OK;
+}
+
+static enum{
+    WIFI_SSID = 0,
+    WIFI_PWD,
+    TODOIST_AUTH,
+    TODOIST_PROID,
+    PARAM_NUM
+};
+
+void sd_read_param(todolist_syscfg_t* cfg){
+    char buffer[CFG_MAX_LEN];
+    FILE *sys_cfg = fopen(CFG_FILE_ADDR, "r");
+    if (sys_cfg != NULL)
+    {
+        for (int i = 0; i < PARAM_NUM && fgets(buffer, CFG_MAX_LEN, sys_cfg); i++)
+        {
+            size_t length = strlen(buffer);
+            // 去掉换行符
+			if (length > 0 && buffer[length - 1] == '\n') {
+				if (length >1 && buffer[length-2] == '\r')//window换行符是\r\n
+				{
+					buffer[length - 2] = '\0';
+					length--;
+				}
+				buffer[length - 1] = '\0';
+			}else{
+				length++;
+				buffer[length - 1] = '\0';
+			}
+            switch (i)
+            {
+            case WIFI_SSID:
+                cfg->ssid = strdup(buffer);
+                break;
+            case WIFI_PWD:
+                cfg->pwd = strdup(buffer);
+                break;
+            case TODOIST_AUTH:
+                cfg->todoist_auth = strdup(buffer);
+                break;
+            case TODOIST_PROID:
+                cfg->todoist_prjid = strdup(buffer);
+                break;
+            default:
+                break;
+            }
+        }
+    }
+    fclose(sys_cfg);
 }

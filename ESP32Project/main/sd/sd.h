@@ -14,8 +14,19 @@
 #define SDMMC 1 			  //使用SDIO
 #define SDSPI 0
 
-sdmmc_card_t *card;
+extern sdmmc_card_t *card;
 
-void sd_init(void);
+esp_err_t sd_init(void);
+
+typedef struct
+{
+	char *ssid;
+	char *pwd;
+	char *todoist_auth;
+	char *todoist_prjid;
+} todolist_syscfg_t;
+
+void sd_read_param(todolist_syscfg_t* cfg);
+
 
 #endif

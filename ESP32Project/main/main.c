@@ -24,6 +24,8 @@
 #include "uart_app.h"
 //todoist
 #include "todoist.h"
+//
+#include "wifi_connect.h"
 
 #define TAG "main"
  
@@ -43,7 +45,7 @@ void print_task(void *param){
 }
 
 //初始化硬件
-static void hardware_init(void){
+static void hardware_init(todolist_syscfg_t* syscfg){
     esp_log_level_set("GT911", ESP_LOG_NONE);//取消触摸日志打印
     esp_err_t ret = nvs_flash_init();
     if (ret == ESP_ERR_NVS_NO_FREE_PAGES) {
@@ -54,19 +56,25 @@ static void hardware_init(void){
     disp_8080_init();
     gt911_init(GT911_I2C_SLAVE_ADDR);
     sd_init();//初始化SD卡，LVGL对接文件系统在menuconfig内
+    sd_read_param(syscfg);
+
+    ESP_LOGI(TAG,"%s,%s,%s,%s",syscfg->ssid,syscfg->pwd,syscfg->todoist_auth,syscfg->todoist_prjid);
+    ESP_ERROR_CHECK(connect_init());
+    ESP_ERROR_CHECK(wifi_connect(syscfg->ssid, syscfg->pwd));
 
     //网络初始化
-    ESP_ERROR_CHECK(esp_netif_init());
-    ESP_ERROR_CHECK(esp_event_loop_create_default());
-    ESP_ERROR_CHECK(example_connect());
+    // ESP_ERROR_CHECK(esp_netif_init());
+    // ESP_ERROR_CHECK(esp_event_loop_create_default());
+    // ESP_ERROR_CHECK(example_connect());
 }
 
 //网络服务在互联网断开时没有关闭访问，可能会导致程序崩溃
 
 void app_main(void)
 {
+    todolist_syscfg_t syscfg;
     //初始化硬件
-    hardware_init();
+    hardware_init(&syscfg);
     //开启Dlna
     xTaskCreate(dlna_init_task,"dlna_start_task",4*1024,NULL,5,NULL);
     //播放功能
