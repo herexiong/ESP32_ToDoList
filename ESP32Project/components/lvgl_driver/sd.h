@@ -8,8 +8,7 @@
 #include "driver/spi_common.h"
 #include "esp_err.h"
 
-// #define LV_FS_PATH "/storage" //文件系统挂载路径
-#define LV_FS_PATH "/sdcard"
+#define LV_FS_PATH "/sdcard" //文件系统挂载路径
 
 #define SDMMC 1 			  //使用SDIO
 #define SDSPI 0
@@ -24,6 +23,8 @@ typedef struct
 	char *pwd;
 	char *todoist_auth;
 	char *todoist_prjid;
+	char *xingzhi_auth;
+	char *xingzhi_city;
 } todolist_syscfg_t;
 
 void sd_read_param(todolist_syscfg_t* cfg);

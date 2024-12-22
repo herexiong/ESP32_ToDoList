@@ -194,7 +194,7 @@ void weather_ui_set(char *weather,char *code,char *temp,char *city){
     if (strcmp(code,codeNum) != 0)
     {
         sprintf(codeNum,"%s",code);
-        sprintf(codeBuffer,"/sdcard/.DeskInfoScreen/weather/white/%s@1x.png",codeNum);
+        sprintf(codeBuffer,"/sdcard/ToDoList_cfg/weather/white/%s@1x.png",codeNum);
         lv_img_set_src(ui_WeatherImage, codeBuffer);	// 加载SD卡中的天气图片 
     }
 

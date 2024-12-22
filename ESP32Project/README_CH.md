@@ -3,7 +3,7 @@
 + LVGL V8.3
 + ESP32S3 N16R8
 ## 外设部分
-+ SD卡
++ SD卡(必须，用于存储天气对应的图片以及WiFi信息，ToDoist Token和项目ID，心知天气Token)
 + ST7796 显示器,分辨率为320*480
 + GT911电容触摸
 + SGP30传感器

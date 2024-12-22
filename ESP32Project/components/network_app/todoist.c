@@ -10,13 +10,13 @@
 #include "freertos/task.h"
 #include "esp_heap_caps.h"
 #include "ui.h"
+#include "sd.h"
 
-//post https://api.todoist.com/rest/v2/tasks/id/close
-
-// #define API_URL "https://api.todoist.com/rest/v1/tasks"
-#define API_URL "https://api.todoist.com/rest/v2/tasks?project_id=2345090092"
-#define API_TOKEN "Bearer 1dcbabb520abf054c819511b668838484574f1d3" // 替换为你的Todoist API Token
+#define API_URL "https://api.todoist.com/rest/v2/tasks"
 #define RECIVE_BUFFER_SIZE 1024*1024
+
+char *api_token = NULL;
+char *api_prj_addr = NULL;
 
 extern const uint8_t root_cert_pem_start[] asm("_binary_root_cert_pem_start");
 extern const uint8_t root_cert_pem_end[] asm("_binary_root_cert_pem_end");
@@ -39,6 +39,20 @@ todoistNode *init_todoist_list()
     head->content = NULL;
     head->description = NULL;
     return head;
+}
+//释放链表
+void free_todoist_list(todoistNode *head)
+{
+    todoistNode *current = head;
+    while (current) {
+        todoistNode *next_node = current->next;
+
+        if (current->content) free(current->content);
+        if (current->description) free(current->description);
+        free(current);
+
+        current = next_node;
+    }
 }
 //通过id寻找节点
 todoistNode* find_node_by_id(todoistNode *head, const char *id)
@@ -274,20 +288,6 @@ void print_todoist_list(todoistNode *head)
     }
 }
 
-void free_todoist_list(todoistNode *head)
-{
-    todoistNode *current = head;
-    while (current) {
-        todoistNode *next_node = current->next;
-
-        if (current->content) free(current->content);
-        if (current->description) free(current->description);
-        free(current);
-
-        current = next_node;
-    }
-}
-
 void http_post_request(const char * content)
 {
     char url[100]={};
@@ -298,22 +298,18 @@ void http_post_request(const char * content)
         return;
     }
     
-    sprintf(url,"%s/%s/close","https://api.todoist.com/rest/v2/tasks",node->id);
-    ESP_LOGI(TAG,"url:%s",url);
+    sprintf(url,"%s/%s/close",API_URL,node->id);
+    // ESP_LOGI(TAG,"url:%s",url);
     esp_http_client_config_t config = {
         .url = url,
+        .method = HTTP_METHOD_POST,
         //证书
         .transport_type = HTTP_TRANSPORT_OVER_SSL,
         .cert_pem = (const char *)root_cert_pem_start,
     };
     esp_http_client_handle_t client = esp_http_client_init(&config);
-
-    // 设置 HTTP POST 方法和请求体
-    esp_http_client_set_method(client, HTTP_METHOD_POST);
-    // esp_http_client_set_post_field(client, NULL, 0);
-
     // 设置HTTP头部
-    esp_http_client_set_header(client, "Authorization", API_TOKEN);
+    esp_http_client_set_header(client, "Authorization", api_token);
 
     // 发送请求
     esp_err_t err = esp_http_client_perform(client);
@@ -324,46 +320,29 @@ void http_post_request(const char * content)
     } else {
         ESP_LOGE(TAG, "HTTP POST request failed: %s", esp_err_to_name(err));
     }
-
     // 释放客户端
     esp_http_client_cleanup(client);
+
 }
 
-// 任务函数
-//ToDo-> 内存线程安全问题
-//ToDo-> 删除的逻辑问题，实现撤回删除功能
-void todoist_task(void *pvParameters)
-{
-	int content_length = 0;
-	ESP_LOGI(TAG, "START");
-	// 在PSRAM中分配缓冲区
-    char *buffer = heap_caps_malloc(RECIVE_BUFFER_SIZE, MALLOC_CAP_SPIRAM);
-    head = init_todoist_list();
-
-    if (!buffer || !head) {
-        ESP_LOGE(TAG, "Failed to allocate memory for response buffer in PSRAM or todoistNode");
-        vTaskDelete(NULL);
-    }    
-
-    while (1) {
-        memset(buffer, 0, RECIVE_BUFFER_SIZE);
-
+esp_err_t http_get_request(char *buffer , const char * api_prj_addr , const char * api_token){
+    	int content_length = 0;
+        esp_err_t err = ESP_FAIL;
         // 配置HTTP客户端
         esp_http_client_config_t config = {
-            .url = API_URL,
-        	// .timeout_ms = 5000,
+            .url = api_prj_addr,
 			//证书
 			.transport_type = HTTP_TRANSPORT_OVER_SSL,
 			.cert_pem = (const char *)root_cert_pem_start,
+            .method = HTTP_METHOD_GET,
         };
 
         esp_http_client_handle_t client = esp_http_client_init(&config);
+
 		if(client != NULL){
 			// 设置HTTP头部
-			esp_http_client_set_header(client, "Authorization", API_TOKEN);
-			// GET Request
-			esp_http_client_set_method(client, HTTP_METHOD_GET);
-			esp_err_t err = esp_http_client_open(client, 0);
+			esp_http_client_set_header(client, "Authorization", api_token);
+			err = esp_http_client_open(client, 0);
 			if (err != ESP_OK) {
 				ESP_LOGE(TAG, "Failed to open HTTP connection: %s", esp_err_to_name(err));
 			} else {
@@ -373,10 +352,9 @@ void todoist_task(void *pvParameters)
 				} else {
 					int data_read = esp_http_client_read_response(client, buffer, RECIVE_BUFFER_SIZE);
 					if (data_read >= 0) {
-                        parse_and_store_tasks(buffer, head);
-                        print_todoist_list(head);
-                        todoist_ui_show(head->next);//跳过头节点
+                        err = ESP_OK;
 					} else {
+                        err = ESP_FAIL;
 						ESP_LOGE(TAG, "Failed to read response");
 					}
 				}
@@ -384,10 +362,44 @@ void todoist_task(void *pvParameters)
 			esp_http_client_close(client);
 		}
 		esp_http_client_cleanup(client);
+        return err;
+}
 
+// 任务函数
+//ToDo-> 内存线程安全问题
+//ToDo-> 删除的逻辑问题，实现撤回删除功能
+void todoist_task(void *pvParameters)
+{
+	// 在PSRAM中分配缓冲区
+    char *buffer = heap_caps_malloc(RECIVE_BUFFER_SIZE, MALLOC_CAP_SPIRAM);
+    head = init_todoist_list();
+
+    todolist_syscfg_t* cfg = (todolist_syscfg_t *)pvParameters;
+    
+    api_token =    cfg->todoist_auth == NULL  ? NULL : (char *)malloc(sizeof(char)*(strlen("Bearer ") + strlen(cfg->todoist_auth)+1));
+    api_prj_addr = cfg->todoist_prjid == NULL ? NULL : (char *)malloc(sizeof(char)*(strlen(API_URL) + strlen("?project_id=") + strlen(cfg->todoist_prjid)+1));
+
+    if (!buffer || !head || !api_token || !api_prj_addr) {
+        goto DELETE;
+    }
+    sprintf(api_token,"Bearer %s",cfg->todoist_auth);
+    sprintf(api_prj_addr,"%s?project_id=%s",API_URL,cfg->todoist_prjid);
+
+    while (1) {
+        memset(buffer, 0, RECIVE_BUFFER_SIZE);
+        if(http_get_request(buffer , api_prj_addr , api_token) == ESP_OK){
+            parse_and_store_tasks(buffer, head);
+            // print_todoist_list(head);
+            todoist_ui_show(head->next);//跳过头节点
+        }
         // 等待10s
         vTaskDelay(10000 / portTICK_PERIOD_MS);
     }
-	free(buffer);
+DELETE:
+    ESP_LOGE(TAG,"todoist_task delete");
+    if(head != NULL) free_todoist_list(head);
+	if(buffer != NULL) free(buffer);
+	if(api_token != NULL) free(api_token);
+	if(api_prj_addr != NULL) free(api_prj_addr);
     vTaskDelete(NULL);
 }

@@ -6,7 +6,26 @@
 + 温湿度，二氧化碳传感器监测
 + 倒计时功能
 + Windows性能监视器
-+ 同步ToDoist代办事项（开发中）
++ 同步ToDoist代办事项
+## 如何使用
+准备一张SD卡，将[SD卡资源文件夹](./ESP32Project/resource_file/sd%20file/)拷贝到SD卡根目录  
+修改SD卡ToDoList_cfg/sys_cfg.txt文件，并按以下格式填入信息
++ WIFI_SSID(WiFi 名称)
++ WIFI_PWD(WiFi 密码)
++ TODOIST_AUTH(ToDoist API口令)
++ TODOIST_PROID(ToDoist 同步的项目ID)
++ XINGZHI_AUTH(心知天气 API口令)
++ XINGZHI_CITY(心知天气对应的城市拼音)
+
+### 如何获取上述的口令和API
++ 进入[ToDoist官网](https://app.todoist.com/),注册账户后,打开设置,关联应用,顶部找到开发者选项,复制API口令,填入TODOIST_AUTH  
++ 进入[ToDoist官网](https://app.todoist.com/),在左侧我的项目下,选择添加项目,在浏览器登录ToDoist的情况下,访问[此链接](https://api.todoist.com/rest/v2/projects),根据json信息找到刚才新建的项目名称,找到对应的id,填入TODOIST_PROID  
++ 进入[心知官网](https://www.seniverse.com/),注册账户后创建免费计划,进入控制台,找到产品,复制私钥,即可填入XINGZHI_AUTH  
++ 进入[心知天气文档](https://seniverse.yuque.com/hyper_data/api_v3/kaqh3s),将本地城市名称拼音填入XINGZHI_CITY
+
+在上述就绪后,根据[烧录说明](./ESP32Project/README_CH.md)烧录程序,即可在无搭建开发环境的情况下使用本项目,enjoy it😋!
+
+---
 ## 性能监视器
 性能监视器只支持Windows，基于[LibreHardwareMonitor](https://github.com/LibreHardwareMonitor/LibreHardwareMonitor)动态库实现的二次开发的CmdMonitor软件实现将对应信息打印到控制台上，再由QT开发的上位机软件捕捉控制台输出，将其通过串口发送给下位机，虽然看着十分繁琐，但好在CPU占用在0.1%左右，内存占用10M以内。LibreHardwareMonitor是由C#编写的，我尝试在QT中调用它的动态库，但是没成功，只能绕个圈圈用C#二次开发的CmdMonitor。  
 
@@ -36,7 +55,6 @@ SquareLineProject是LVGL的图形化UI生成工具，此文件夹用于存放Squ
 ./HxMonitor QT工程文件  
 ### CmdMonitor
 ./publish 编译后的软件，可以直接运行
-
 
 ## [版本更新日志](./更新日志.md)
 

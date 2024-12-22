@@ -1,12 +1,8 @@
 #include "sd.h"
 #include "dev_board.h"
+#include "esp_log.h"
 
 #include "string.h"
-#include "sdmmc_cmd.h"
-#include "esp_vfs_fat.h"
-#include "driver/sdmmc_host.h"
-#include "driver/spi_common.h"
-#include "esp_err.h"
 
 #define TAG "SD"
 #define CFG_FILE_ADDR "/sdcard/ToDoList_cfg/sys_cfg.txt"
@@ -97,6 +93,8 @@ static enum{
     WIFI_PWD,
     TODOIST_AUTH,
     TODOIST_PROID,
+    XINGZHI_AUTH,
+    XINGZHI_CITY,
     PARAM_NUM
 };
 
@@ -134,6 +132,10 @@ void sd_read_param(todolist_syscfg_t* cfg){
             case TODOIST_PROID:
                 cfg->todoist_prjid = strdup(buffer);
                 break;
+            case XINGZHI_AUTH:
+                cfg->xingzhi_auth = strdup(buffer);
+            case XINGZHI_CITY:
+                cfg->xingzhi_city = strdup(buffer);
             default:
                 break;
             }

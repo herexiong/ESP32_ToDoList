@@ -5,10 +5,11 @@
 #include "esp_http_client.h"
 #include "cJSON.h"
 #include "ui.h"
+#include "sd.h"
 
 #define TAG "weather"
-#define CITY "chengdu"
-#define PRIKEY "Sw1XQBXZhdSqUSpCw"
+#define API_URL "http://api.seniverse.com/v3/weather/now.json?key="
+
 #define MAX_HTTP_OUTPUT_BUFFER 2048
 
 void parse_weather_json(char *buffer){
@@ -62,12 +63,12 @@ void parse_weather_json(char *buffer){
  *  Note: This approach should only be used in case use of low level APIs is required.
  *  The easiest way is to use esp_http_perform()s
  */
-static void http_native_request(void)
+static void http_native_request(char *url)
 {
     char output_buffer[MAX_HTTP_OUTPUT_BUFFER] = {0};   // Buffer to store response of http request
     int content_length = 0;
     esp_http_client_config_t config = {
-        .url = "http://api.seniverse.com/v3/weather/now.json?key="PRIKEY"&location="CITY"&language=zh-Hans&unit=c",
+        .url = url,
     };
     esp_http_client_handle_t client = esp_http_client_init(&config);
 
@@ -100,11 +101,31 @@ static void http_native_request(void)
 }
 
 void weather_task(void *param){
+
+    todolist_syscfg_t* cfg = (todolist_syscfg_t *)param;
+
+    char *url = NULL;
+    if (cfg->xingzhi_auth != NULL && cfg->xingzhi_city != NULL)
+    {
+        url = (char *)malloc(sizeof(char) * (strlen(API_URL) + strlen(cfg->xingzhi_auth) + strlen("&location=") + strlen(cfg->xingzhi_city) + strlen("&language=zh-Hans&unit=c") +1));
+        if (url == NULL)
+        {
+            goto DELETE;
+        }else{
+            sprintf(url,"%s%s&location=%s&language=zh-Hans&unit=c",API_URL,cfg->xingzhi_auth,cfg->xingzhi_city);
+        }
+    }else{
+        goto DELETE;
+    }
+
     //获取天气
     while (1)
     {
-		http_native_request();
+		http_native_request(url);
         vTaskDelay(pdMS_TO_TICKS(300000));//300秒更新一次
     }
+DELETE:
+    ESP_LOGE(TAG,"weather_task DELETE");
+    if (url != NULL) free(url);
     vTaskDelete(NULL);
 }
