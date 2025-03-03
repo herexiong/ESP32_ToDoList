@@ -27,22 +27,23 @@
 
 ---
 ## 性能监视器
-性能监视器只支持Windows，基于[LibreHardwareMonitor](https://github.com/LibreHardwareMonitor/LibreHardwareMonitor)动态库实现的二次开发的CmdMonitor软件实现将对应信息打印到控制台上，再由QT开发的上位机软件捕捉控制台输出，将其通过串口发送给下位机，虽然看着十分繁琐，但好在CPU占用在0.1%左右，内存占用10M以内。LibreHardwareMonitor是由C#编写的，我尝试在QT中调用它的动态库，但是没成功，只能绕个圈圈用C#二次开发的CmdMonitor。  
+性能监视器只支持Windows，基于[LibreHardwareMonitor](https://github.com/LibreHardwareMonitor/LibreHardwareMonitor)动态库实现的二次开发的CmdMonitor软件实现将对应信息打印到控制台上，再由QT开发的上位机软件捕捉控制台输出，将其通过串口发送给下位机，虽然看着十分繁琐，但好在CPU占用在0.1%左右，内存占用10M以内。LibreHardwareMonitor是由C#编写的，我尝试在QT中调用它的动态库，但是没成功，只能绕个圈圈用C#二次开发的CmdMonitor。![上位机软件截图](image.png)上位机软件截图  
 
-在AMD更新24.12.1版驱动后，AMD显卡的很多信息无法被LibreHardwareMonitor所输出，即使LibreHardwareMonitor软件也是一样，之前22.x版本是正常的，等LibreHardwareMonitor更新后可能会修复。  
+在AMD更新24.12.1版驱动后，AMD显卡的很多信息无法被LibreHardwareMonitor所输出，即使LibreHardwareMonitor软件也是一样，之前22.x版本是正常的，等LibreHardwareMonitor更新后可能会修复。(莫名其妙就好了，代码未改动也没更新驱动，很奇怪)  
 
-由于ESP32S3的外部IO接口有限，因此使用IDF默认的串口进行和上位机通讯，如果需要调试，请关闭下位机的性能监视器任务，或多插两个串口使用端口转发进行调试。  
+由于ESP32S3的外部IO接口有限，因此使用IDF默认的串口进行和上位机通讯，如果需要调试，请关闭下位机的性能监视器任务，或多插两个串口使用端口转发进行调试。![alt text]({150CD97A-AF8C-4CD4-AF7C-46B11A5FAC16}.png)下位机监视器演示  
 ## OTA功能
 OTA组件修改[esp_ghota](https://github.com/Fishwaldo/esp_ghota),将Github的相关API改为Gitee。使用该组件可以使得下位机自动监测仓库地址的release是否有新的固件，若有则会从仓库release下载并执行更新，免去了搭建服务器的麻烦，由于总所周知的问题，国内并不能稳定的访问Github服务器，这也是为什么改为Gitee和建立Gitee镜像仓库的原因。  
 ## 天气功能
-天气使用心知天气提供的免费API，通过HTTP的get方法获取到json信息后使用cJSON库进行解析，但目前无法做到根据IP自动获取地区，需要手动设置地区
+天气使用心知天气提供的免费API，通过HTTP的get方法获取到json信息后使用cJSON库进行解析，但目前无法做到根据IP自动获取地区，需要在SD卡的配置文件内手动设置地区。![alt text]({E82774AC-0714-4C6B-9032-920A3434EFE2}.png)天气功能演示  
 ## DLNA功能
-局域网音乐投放目前只做了单声道，使用解码板附带的喇叭效果实在难以恭维，后期可能会升级双声道并换上MacBook的扬声器
+将时间天气卡片左滑即可切换到DLNA功能卡片，卡片内有进度条显示，可以拖动进度条，下方有播放和上一曲和下一曲的功能按钮可以点击。局域网音乐投放目前只做了单声道，使用解码板附带的喇叭效果实在难以恭维，后期可能会升级双声道并换上MacBook的扬声器![alt text]({86B04E74-CEDC-4DFF-911C-958B09580C40}.png)DLNA功能演示  
+
 ## 本地传感器功能
-使用SGP30和SHT30两款I2C接口的传感器监测温湿度和二氧化碳信息，使用I2C接口可以有效的节省下位机IO口资源，但SGP30似乎需要连续运行30个小时以上才准确，并使用的动态基准线技术实现校准，后续在开发NVS功能时会把这个缺点补上
+传感器数据集成在第一个时间天气卡片的右下角。使用SGP30和SHT30两款I2C接口的传感器监测温湿度和二氧化碳信息，使用I2C接口可以有效的节省下位机IO口资源，但SGP30似乎需要连续运行30个小时以上才准确，并使用的动态基准线技术实现校准，后续在开发NVS功能时会把这个缺点补上。
 ## 代办清单
 原本打算使用ESP32做一个网页服务器实现代办功能，但实用性实在有限，不如找一个可以提供外部API的代办清单，通过同步获取代办显示到下位机上  
-通过Todoist的API，通过https的get方法实现获取待办，下位机勾选后，通过post方法实现删除待办
+通过Todoist的API，通过https的get方法实现获取待办，下位机勾选后，通过post方法实现删除待办![alt text]({18B39208-4F1F-4A4D-B0DF-FA587589CA34}.png)Todoist网页显示![alt text]({9A662962-2AEE-4FC9-9094-8AA44C9C7325}.png)下位机同步演示
 ## 文件介绍
 ### ESP32Project
 用于存放ESP32的代码

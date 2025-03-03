@@ -202,7 +202,7 @@ esp_err_t wifi_connect(char* wifi_ssid, char* wifi_password)
     strncpy((char*)wifi_config.sta.password, wifi_password, sizeof(wifi_config.sta.password));
  
     ESP_ERROR_CHECK(esp_wifi_set_ps(WIFI_PS_NONE)); // default is WIFI_PS_MIN_MODEM
-    ESP_ERROR_CHECK(esp_wifi_set_storage(WIFI_STORAGE_FLASH)); // default is WIFI_STORAGE_FLASH
+    ESP_ERROR_CHECK(esp_wifi_set_storage(WIFI_STORAGE_RAM)); // default is WIFI_STORAGE_FLASH
  
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
     ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config));
@@ -210,8 +210,7 @@ esp_err_t wifi_connect(char* wifi_ssid, char* wifi_password)
     ESP_LOGI(TAG, "Connecting to Wi-Fi network: %s", wifi_config.sta.ssid);
     ESP_ERROR_CHECK(esp_wifi_start());
  
-    EventBits_t bits = xEventGroupWaitBits(s_wifi_event_group, WIFI_CONNECTED_BIT | WIFI_FAIL_BIT,
-        pdFALSE, pdFALSE, portMAX_DELAY);
+    EventBits_t bits = xEventGroupWaitBits(s_wifi_event_group, WIFI_CONNECTED_BIT | WIFI_FAIL_BIT, pdFALSE, pdFALSE, portMAX_DELAY);
  
     if (bits & WIFI_CONNECTED_BIT) {
         ESP_LOGI(TAG, "Connected to Wi-Fi network: %s", wifi_config.sta.ssid);
